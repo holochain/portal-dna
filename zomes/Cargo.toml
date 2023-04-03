@@ -1,0 +1,5 @@
+[workspace]
+members = [
+  "portal",
+  "portal_api",
+]

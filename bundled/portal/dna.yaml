@@ -1,0 +1,15 @@
+manifest_version: "1"
+name: portal
+integrity:
+  uuid: ~
+  properties: ~
+  origin_time: 2023-01-01T00:00:00.000000Z
+  zomes:
+    - name: portal
+      bundled: ../../zomes/portal.wasm
+coordinator:
+  zomes:
+    - name: portal_api
+      bundled: ../../zomes/portal_api.wasm
+      dependencies:
+        - name: portal

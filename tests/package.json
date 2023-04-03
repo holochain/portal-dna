@@ -1,0 +1,22 @@
+{
+  "name": "testing",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@whi/crux-payload-parser": "^0.3.2",
+    "@whi/holo-hash": "^0.3.0",
+    "@whi/holochain-backdrop": "^2.0.0",
+    "@whi/holochain-client": "^0.80.1",
+    "@whi/json": "^0.1.5",
+    "@whi/stdlog": "^0.3.4"
+  },
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "mocha": "^10.1.0",
+    "why-is-node-running": "^2.2.0"
+  }
+}
