@@ -741,6 +741,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "hc_portal_types"
+version = "0.3.0"
+dependencies = [
+ "hc_crud_caps",
+ "hdi",
+ "rmpv",
+ "serde",
+ "serde_yaml",
+ "thiserror",
+]
+
+[[package]]
 name = "hc_utils"
 version = "0.3.0"
 dependencies = [
@@ -1308,10 +1320,10 @@ version = "0.3.0"
 dependencies = [
  "essence_payloads",
  "hc_crud_caps",
+ "hc_portal_types",
  "hc_utils",
  "hdi",
  "hdk",
- "portal_types",
  "rmpv",
  "serde",
  "thiserror",
@@ -1329,18 +1341,6 @@ dependencies = [
  "rand",
  "rmpv",
  "serde",
- "thiserror",
-]
-
-[[package]]
-name = "portal_types"
-version = "0.3.0"
-dependencies = [
- "hc_crud_caps",
- "hdi",
- "rmpv",
- "serde",
- "serde_yaml",
  "thiserror",
 ]
 

@@ -12,6 +12,11 @@ PORTAL_API_WASM		= zomes/portal_api.wasm
 #
 # Project
 #
+preview-crate:			test-debug
+	cd portal_types; cargo publish --dry-run
+publish-crate:			test-debug
+	cd portal_types; CARGO_HOME=$(HOME)/.cargo cargo publish
+
 tests/package-lock.json:	tests/package.json
 	touch $@
 tests/node_modules:		tests/package-lock.json
