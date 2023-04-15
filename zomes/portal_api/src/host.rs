@@ -73,7 +73,7 @@ pub struct GetInput {
     pub dna: DnaHash,
 }
 
-pub fn list_links (input: GetInput) -> AppResult<Vec<AnyLinkableHash>> {
+pub fn list_links (input: GetInput) -> AppResult<Vec<ActionHash>> {
     debug!("Get links from hosting anchor: {}.{}", ANCHOR_HOSTS, &input.dna.to_string() );
     let (_, pathhash ) = hc_utils::path( ANCHOR_HOSTS, vec![
 	&input.dna.to_string(),
@@ -83,7 +83,7 @@ pub fn list_links (input: GetInput) -> AppResult<Vec<AnyLinkableHash>> {
     Ok(
 	links
 	    .into_iter()
-	    .map(|link| link.target)
+	    .filter_map(|link| link.target.into_action_hash() )
 	    .collect()
     )
 }
@@ -93,7 +93,7 @@ pub fn list (input: GetInput) -> AppResult<Vec<Entity<HostEntry>>> {
     let mut hosts : Vec<Entity<HostEntry>> = Vec::new();
 
     for host_addr in addrs {
-	let host : Entity<HostEntry> = get_entity( &host_addr.clone().into() )?;
+	let host : Entity<HostEntry> = get_entity( &host_addr )?;
 	hosts.push( host );
     }
 
