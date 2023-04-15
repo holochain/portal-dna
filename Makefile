@@ -52,11 +52,6 @@ zomes/target/wasm32-unknown-unknown/release/%.wasm:	Makefile zomes/%/src/*.rs zo
 zomes/%/Cargo.lock:
 	touch $@
 
-$(MERE_MEMORY_WASM):
-	curl --fail -L "https://github.com/mjbrisebois/hc-zome-mere-memory/releases/download/v$$(echo $(NEW_MM_VERSION))/mere_memory.wasm" --output $@
-$(MERE_MEMORY_API_WASM):
-	curl --fail -L "https://github.com/mjbrisebois/hc-zome-mere-memory/releases/download/v$$(echo $(NEW_MM_VERSION))/mere_memory_api.wasm" --output $@
-
 tests/devhub/%.dna:
 	wget -O $@ "https://github.com/holochain/devhub-dnas/releases/download/$(DEVHUB_VERSION)/$*.dna"
 
@@ -123,17 +118,16 @@ NEW_HDI_VERSION = "0.3.0-beta-rc.3"
 PRE_CRUD_VERSION = "0.3.0"
 NEW_CRUD_VERSION = "0.5.0"
 
-# PRE_MM_VERSION = "0.79.0"
-NEW_MM_VERSION = "0.82.0"
-
 GG_REPLACE_LOCATIONS = ':(exclude)*.lock' zomes/*/ *_types/ hc_utils
 
+update-all-version:
+	rm -r target;
+	make update-hdk-version;
+	make update-hdi-version;
+	make update-crud-version;
 update-hdk-version:
 	git grep -l $(PRE_HDK_VERSION) -- $(GG_REPLACE_LOCATIONS) | xargs sed -i 's/$(PRE_HDK_VERSION)/$(NEW_HDK_VERSION)/g'
 update-hdi-version:
 	git grep -l $(PRE_HDI_VERSION) -- $(GG_REPLACE_LOCATIONS) | xargs sed -i 's/$(PRE_HDI_VERSION)/$(NEW_HDI_VERSION)/g'
 update-crud-version:
 	git grep -l $(PRE_CRUD_VERSION) -- $(GG_REPLACE_LOCATIONS) | xargs sed -i 's/$(PRE_CRUD_VERSION)/$(NEW_CRUD_VERSION)/g'
-update-mere-memory-version:
-	rm -f zomes/mere_memory*.wasm
-#	git grep -l $(PRE_MM_VERSION) -- $(GG_REPLACE_LOCATIONS) | xargs sed -i 's/$(PRE_MM_VERSION)/$(NEW_MM_VERSION)/g'
