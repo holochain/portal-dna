@@ -69,9 +69,9 @@ fn my_host_entries(_:()) -> ExternResult<Vec<HostEntry>> {
 pub fn host_entries() -> AppResult<Vec<HostEntry>> {
     query(ChainQueryFilter {
 	sequence_range: ChainQueryFilterRange::Unbounded,
-	entry_type: Some( EntryTypesUnit::Host.try_into()? ),
+	entry_type: Some( vec![ EntryTypesUnit::Host.try_into()? ] ),
 	entry_hashes: None,
-	action_type: Some( ActionType::Create ),
+	action_type: Some( vec![ ActionType::Create ] ),
 	include_entries: true,
 	order_descending: true,
     })?

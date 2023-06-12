@@ -13,7 +13,8 @@ PORTAL_API_WASM		= zomes/portal_api.wasm
 # Project
 #
 preview-crate:			test-debug
-	cd portal_types; cargo publish --dry-run
+	cd portal_types; CARGO_HOME=$(HOME)/.cargo cargo publish --dry-run
+	touch portal_types/Cargo.toml # Force rebuild to fix issue after dry run
 publish-crate:			test-debug
 	cd portal_types; CARGO_HOME=$(HOME)/.cargo cargo publish
 
@@ -51,9 +52,6 @@ zomes/target/wasm32-unknown-unknown/release/%.wasm:	Makefile zomes/%/src/*.rs zo
 	@touch $@ # Cargo must have a cache somewhere because it doesn't update the file time
 zomes/%/Cargo.lock:
 	touch $@
-
-tests/devhub/%.dna:
-	wget -O $@ "https://github.com/holochain/devhub-dnas/releases/download/$(DEVHUB_VERSION)/$*.dna"
 
 use-local-client:
 	cd tests; npm uninstall @whi/holochain-client
@@ -109,14 +107,14 @@ clean-files-all:	clean-remove-chaff
 clean-files-all-force:	clean-remove-chaff
 	git clean -fdx
 
-PRE_HDK_VERSION = "0.1.0"
-NEW_HDK_VERSION = "0.2.0-beta-rc.4"
+PRE_HDK_VERSION = "0.2.0-beta-rc.4"
+NEW_HDK_VERSION = "0.3.0-beta-dev.2"
 
-PRE_HDI_VERSION = "0.2.0"
-NEW_HDI_VERSION = "0.3.0-beta-rc.3"
+PRE_HDI_VERSION = "0.3.0-beta-rc.3"
+NEW_HDI_VERSION = "0.4.0-beta-dev.1"
 
-PRE_CRUD_VERSION = "0.3.0"
-NEW_CRUD_VERSION = "0.5.0"
+PRE_CRUD_VERSION = "0.5.0"
+NEW_CRUD_VERSION = "0.6.0"
 
 GG_REPLACE_LOCATIONS = ':(exclude)*.lock' zomes/*/ *_types/ hc_utils
 
