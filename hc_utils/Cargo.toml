@@ -1,6 +1,6 @@
 [package]
 name = "hc_utils"
-version = "0.6.0"
+version = "0.7.0"
 authors = ["Matthew Brisebois <matthew.brisebois@holo.host>"]
 edition = "2018"
 
@@ -9,4 +9,4 @@ name = "hc_utils"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-hdk = "0.3.0-beta-dev.2"
+hdk = "0.3.0-beta-dev.7"
