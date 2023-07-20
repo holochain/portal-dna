@@ -12,12 +12,6 @@ PORTAL_API_WASM		= zomes/portal_api.wasm
 #
 # Project
 #
-preview-crate:			test-debug
-	cd portal_types; CARGO_HOME=$(HOME)/.cargo cargo publish --dry-run
-	touch portal_types/Cargo.toml # Force rebuild to fix issue after dry run
-publish-crate:			test-debug
-	cd portal_types; CARGO_HOME=$(HOME)/.cargo cargo publish
-
 tests/package-lock.json:	tests/package.json
 	touch $@
 tests/node_modules:		tests/package-lock.json
@@ -70,6 +64,19 @@ use-npm-backdrop:
 
 
 #
+# Packages
+#
+preview-crate:			test-debug
+	cd portal_types; cargo publish --dry-run --allow-dirty
+	touch portal_types/src/lib.rs # Force rebuild to fix issue after dry run
+publish-crate:			test-debug .cargo/credentials
+	cd portal_types; cargo publish
+.cargo/credentials:
+	cp ~/$@ $@
+
+
+
+#
 # Testing
 #
 test:				test-unit test-integration
@@ -78,6 +85,7 @@ test-debug:			test-unit test-integration-debug
 test-unit:			test-unit-portal test-unit-portal_api
 test-unit-%:
 	cd zomes;		RUST_BACKTRACE=1 cargo test $* -- --nocapture
+
 
 
 # DNAs
