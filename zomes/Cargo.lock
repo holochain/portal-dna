@@ -784,7 +784,7 @@ dependencies = [
 
 [[package]]
 name = "hc_portal_types"
-version = "0.7.0"
+version = "0.8.0"
 dependencies = [
  "hc_crud_caps",
  "hdi",
