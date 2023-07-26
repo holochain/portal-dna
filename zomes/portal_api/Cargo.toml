@@ -9,9 +9,9 @@ name = "portal_api"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-hc_crud_caps = "0.8.0"
+hc_crud_caps = "0.9.0"
 hc_utils = {path = "../../hc_utils"}
-hdk = "0.2.1-beta-rc.0"
+hdk = "=0.2.1"
 hex = "0"
 portal = {path = "../portal"}
 rand = "0.8.5"
