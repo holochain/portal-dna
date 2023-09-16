@@ -52,9 +52,6 @@ zomes/target/wasm32-unknown-unknown/release/%.wasm:	Makefile zomes/%/src/*.rs zo
 zomes/%/Cargo.lock:
 	touch $@
 
-tests/devhub/%.dna:
-	wget -O $@ "https://github.com/holochain/devhub-dnas/releases/download/$(DEVHUB_VERSION)/$*.dna"
-
 use-local-client:
 	cd tests; npm uninstall @whi/holochain-client
 	cd tests; npm install --save ../../js-holochain-client/whi-holochain-client-0.78.0.tgz
@@ -109,14 +106,14 @@ clean-files-all:	clean-remove-chaff
 clean-files-all-force:	clean-remove-chaff
 	git clean -fdx
 
-PRE_HDK_VERSION = "0.2.0-beta-rc.4"
-NEW_HDK_VERSION = "0.1.3-beta-rc.1"
+PRE_HDK_VERSION = "0.1.3-beta-rc.1"
+NEW_HDK_VERSION = "0.1.4"
 
-PRE_HDI_VERSION = "0.3.0-beta-rc.3"
-NEW_HDI_VERSION = "0.2.3-beta-rc.0"
+PRE_HDI_VERSION = "0.2.3-beta-rc.0"
+NEW_HDI_VERSION = "0.2.4"
 
-PRE_CRUD_VERSION = "0.5.0"
-NEW_CRUD_VERSION = ""
+PRE_CRUD_VERSION = "10d042c36024e2d839008bdb621595a8c09f0b74"
+NEW_CRUD_VERSION = "ccee03e7493cd45d73b2211f4f465cabde28e357"
 
 GG_REPLACE_LOCATIONS = ':(exclude)*.lock' zomes/*/ *_types/ hc_utils
 
