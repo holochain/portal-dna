@@ -1,37 +1,34 @@
 mod constants;
 mod host;
 
+pub use portal::hdi;
+pub use portal::hdi_extensions;
+pub use portal::hc_crud;
+pub use portal_sdk::hdk;
+pub use portal_sdk::hdk_extensions;
+pub use constants::*;
+
 use rand::seq::SliceRandom;
+use hdi_extensions::{
+    guest_error,
+};
 use hdk::prelude::*;
+use holo_hash::DnaHash;
 use hc_crud::{
     Entity,
 };
-pub use portal::{
-    LinkTypes,
-    EntryTypes,
+use portal::{
     EntryTypesUnit,
 
     HostEntry,
 
-    AppResult, Response, EntityResponse,
-    composition, catch,
-
-    AppError,
-    UserError,
-
-    RemoteCallDetails,
-    BridgeCallDetails,
     Payload,
+
+    BridgeCallDetails,
+
     RemoteCallInput,
     BridgeCallInput,
     DnaZomeFunction,
-};
-pub use constants::{
-    ENTITY_MD,
-    ENTITY_COLLECTION_MD,
-    VALUE_MD,
-
-    ANCHOR_HOSTS,
 };
 
 
@@ -55,8 +52,8 @@ fn init(_: ()) -> ExternResult<InitCallbackResult> {
 
 
 #[hdk_extern]
-fn whoami(_: ()) -> ExternResult<Response<AgentInfo>> {
-    Ok(composition( agent_info()?, VALUE_MD ))
+fn whoami(_: ()) -> ExternResult<AgentInfo> {
+    Ok( agent_info()? )
 }
 
 
@@ -66,7 +63,7 @@ fn my_host_entries(_:()) -> ExternResult<Vec<HostEntry>> {
     Ok( host_entries()? )
 }
 
-pub fn host_entries() -> AppResult<Vec<HostEntry>> {
+pub fn host_entries() -> ExternResult<Vec<HostEntry>> {
     query(ChainQueryFilter {
 	sequence_range: ChainQueryFilterRange::Unbounded,
 	entry_type: Some( vec![ EntryTypesUnit::Host.try_into()? ] ),
@@ -82,13 +79,13 @@ pub fn host_entries() -> AppResult<Vec<HostEntry>> {
 		    Ok( entry.try_into()? )
 		},
 		// Should be unreachable because of chain query filter settings
-		_ => Err(UserError::StaticError("Expected entry; Chain query filter provided Create with no entry present"))?,
+		_ => Err(guest_error!("Expected entry; Chain query filter provided Create with no entry present".to_string()))?,
 	    }
 	})
 	.collect()
 }
 
-pub fn latest_host_entry_for_dna(dna: &holo_hash::DnaHash) -> AppResult<Option<HostEntry>> {
+pub fn latest_host_entry_for_dna(dna: &DnaHash) -> ExternResult<Option<HostEntry>> {
     let dna_entries = host_entries()?
 	.into_iter()
 	.filter(|host_entry| host_entry.dna == *dna )
@@ -98,7 +95,7 @@ pub fn latest_host_entry_for_dna(dna: &holo_hash::DnaHash) -> AppResult<Option<H
     Ok( host_entry.map(|he| he.to_owned() ) )
 }
 
-fn handler_bridge_call(input: BridgeCallInput) -> AppResult<rmpv::Value> {
+fn handler_bridge_call(input: BridgeCallInput) -> ExternResult<Payload> {
     let agent_info = agent_info()?;
 
     // Need to add a check here for this agent's registered zome functions
@@ -106,7 +103,7 @@ fn handler_bridge_call(input: BridgeCallInput) -> AppResult<rmpv::Value> {
 	Some(host_entry) => {
 	    match host_entry.capabilities.access {
 		CapAccess::Unrestricted => (),
-		_ => return Err(UserError::CustomError(format!("Access is conditional for DNA {}, but only Unrestricted is supported at this time", input.dna )))?,
+		_ => return Err(guest_error!(format!("Access is conditional for DNA {}, but only Unrestricted is supported at this time", input.dna )))?,
 	    }
 
 	    match host_entry.capabilities.functions {
@@ -118,14 +115,14 @@ fn handler_bridge_call(input: BridgeCallInput) -> AppResult<rmpv::Value> {
 				&& *function == input.function.clone().into()
 			})
 		    {
-			Err(UserError::CustomError(format!("No capability granted for DNA zome/function {}/{}", input.zome, input.function )))?;
+		        Err(guest_error!(format!("No capability granted for DNA zome/function {}/{}", input.zome, input.function )))?;
 		    }
 		}
 		_ => (),
 	    }
 	},
 	None => {
-	    return Err(UserError::CustomError(format!("No host record for DNA {}", input.dna )))?;
+	    return Err(guest_error!(format!("No host record for DNA {}", input.dna )))?;
 	},
     };
 
@@ -139,39 +136,43 @@ fn handler_bridge_call(input: BridgeCallInput) -> AppResult<rmpv::Value> {
 	None,
 	input.payload
     )?;
-    let result = hc_utils::zome_call_response_as_result( response )?;
+    let result = portal_sdk::zome_call_response_as_result( response )?;
 
-    Ok( result.decode()? )
+    Ok(
+        result.decode()
+            .map_err( |err| guest_error!(format!("{:?}", err )) )?
+    )
 }
 
 #[hdk_extern]
-fn bridge_call(input: BridgeCallInput) -> ExternResult<Response<rmpv::Value>> {
-    let result = catch!( handler_bridge_call( input ) );
+fn bridge_call(input: BridgeCallInput) -> ExternResult<Payload> {
+    let result = handler_bridge_call( input )?;
 
-     Ok(composition( result, VALUE_MD ))
+     Ok( result )
 }
 
 
-fn handler_ping_call(host: AgentPubKey) -> AppResult<bool> {
+fn handler_ping_call(host: AgentPubKey) -> ExternResult<bool> {
     let response = call_remote(
 	host,
-	"portal_api",
+	"portal_csr",
 	"pong".into(),
 	None,
 	(),
     )?;
-    let result = hc_utils::zome_call_response_as_result( response )?;
-    let _response : String = result.decode()?;
+    let result = portal_sdk::zome_call_response_as_result( response )?;
+    let _response : String = result.decode()
+        .map_err( |err| guest_error!(format!("{:?}", err )) )?;
 
     Ok( true )
 }
 
 #[hdk_extern]
-fn ping(host: AgentPubKey) -> ExternResult<Response<bool>> {
+fn ping(host: AgentPubKey) -> ExternResult<bool> {
     debug!("Sending ping to host: {}", host );
-    let success = catch!( handler_ping_call( host ) );
+    let success = handler_ping_call( host )?;
 
-    Ok(composition( success, VALUE_MD ))
+    Ok( success )
 }
 
 
@@ -184,30 +185,30 @@ fn pong(_: ()) -> ExternResult<String> {
 
 
 #[hdk_extern]
-fn register_host(input: host::CreateInput) -> ExternResult<EntityResponse<HostEntry>> {
-    let entity = catch!( host::create( input ) );
+fn register_host(input: host::CreateInput) -> ExternResult<Entity<HostEntry>> {
+    let entity = host::create( input )?;
 
-    Ok(composition( entity, ENTITY_MD ))
+    Ok( entity )
 }
 
 #[hdk_extern]
-fn get_registered_hosts(input: host::GetInput) -> ExternResult<Response<Vec<Entity<HostEntry>>>> {
-    let list = catch!( host::list( input ) );
+fn get_registered_hosts(input: host::GetInput) -> ExternResult<Vec<Entity<HostEntry>>> {
+    let list = host::list( input )?;
 
-    Ok(composition( list, ENTITY_COLLECTION_MD ))
+    Ok( list )
 }
 
 #[hdk_extern]
-fn get_registered_hosts_randomized(input: host::GetInput) -> ExternResult<Response<Vec<Entity<HostEntry>>>> {
-    let mut list : Vec<Entity<HostEntry>> = catch!( host::list( input ) );
+fn get_registered_hosts_randomized(input: host::GetInput) -> ExternResult<Vec<Entity<HostEntry>>> {
+    let mut list : Vec<Entity<HostEntry>> = host::list( input )?;
 
     list.shuffle(&mut rand::thread_rng());
 
-    Ok(composition( list, ENTITY_COLLECTION_MD ))
+    Ok( list )
 }
 
 
-fn handler_get_hosts_for_zome_function(dna: holo_hash::DnaHash, zome: ZomeName, function: FunctionName) -> AppResult<Vec<Entity<HostEntry>>> {
+fn handler_get_hosts_for_zome_function(dna: DnaHash, zome: ZomeName, function: FunctionName) -> ExternResult<Vec<Entity<HostEntry>>> {
     let hosts = host::list( host::GetInput {
 	dna: dna,
     })?;
@@ -234,10 +235,10 @@ fn handler_get_hosts_for_zome_function(dna: holo_hash::DnaHash, zome: ZomeName, 
 
 
 #[hdk_extern]
-fn get_hosts_for_zome_function(input: DnaZomeFunction) -> ExternResult<Response<Vec<Entity<HostEntry>>>> {
-    let hosts = catch!( handler_get_hosts_for_zome_function(input.dna, input.zome, input.function) );
+fn get_hosts_for_zome_function(input: DnaZomeFunction) -> ExternResult<Vec<Entity<HostEntry>>> {
+    let hosts = handler_get_hosts_for_zome_function(input.dna, input.zome, input.function)?;
 
-    Ok(composition( hosts, ENTITY_COLLECTION_MD ))
+    Ok( hosts )
 }
 
 
@@ -248,7 +249,7 @@ pub struct CustomRemoteCallInput {
     call: RemoteCallInput,
 }
 
-fn handler_custom_remote_call(input: CustomRemoteCallInput) -> AppResult<Response<rmpv::Value>> {
+fn handler_custom_remote_call(input: CustomRemoteCallInput) -> ExternResult<Payload> {
     let call_details = BridgeCallDetails {
 	dna: input.call.dna,
 	zome: input.call.zome,
@@ -258,18 +259,21 @@ fn handler_custom_remote_call(input: CustomRemoteCallInput) -> AppResult<Respons
 
     let response = call_remote(
 	input.host,
-	"portal_api",
+	"portal_csr",
 	"bridge_call".into(),
 	None,
 	call_details,
     )?;
 
-    let result = hc_utils::zome_call_response_as_result( response )?;
+    let result = portal_sdk::zome_call_response_as_result( response )?;
 
-    Ok( result.decode()? )
+    Ok(
+        result.decode()
+            .map_err( |err| guest_error!(format!("{:?}", err )) )?
+    )
 }
 
 #[hdk_extern]
-fn custom_remote_call(input: CustomRemoteCallInput) -> ExternResult<Response<rmpv::Value>> {
+fn custom_remote_call(input: CustomRemoteCallInput) -> ExternResult<Payload> {
     Ok( handler_custom_remote_call( input )? )
 }

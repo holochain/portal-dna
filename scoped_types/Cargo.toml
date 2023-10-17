@@ -1,12 +1,14 @@
 [package]
-name = "hc_utils"
+name = "hc_portal_scoped_types"
 version = "0.0.0"
 authors = ["Matthew Brisebois <matthew.brisebois@holo.host>"]
 edition = "2018"
 
 [lib]
-name = "hc_utils"
+name = "portal_scoped_types"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-hdk = "=0.2.1"
+hc_portal_types = { path = "../types" }
+hc_crud_caps = "0.10.2"
+serde = "1"

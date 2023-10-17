@@ -1,5 +1,7 @@
-.cargo
+/.cargo
 target
-tests/node_modules
-zomes/*.wasm
-bundled/*.dna
+/tests/node_modules
+/zomes/*.wasm
+/portal.dna
+/zomelets/dist
+/zomelets/node_modules

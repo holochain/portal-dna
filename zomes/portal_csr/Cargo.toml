@@ -1,12 +1,15 @@
 [package]
-name = "portal"
+name = "portal_csr"
 version = "0.0.0"
 authors = ["Matthew Brisebois <matthew.brisebois@holo.host>"]
 edition = "2018"
 
 [lib]
-name = "portal"
+name = "portal_csr"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-hc_portal_scoped_types = {path = "../../scoped_types"}
+hc_portal_sdk = { path = "../../sdk" }
+portal = { path = "../portal" }
+rand = "0.8.5"
+serde = "1"

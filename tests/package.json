@@ -2,19 +2,18 @@
   "name": "testing",
   "version": "0.0.0",
   "description": "",
+  "type": "module",
   "main": "index.js",
   "scripts": {},
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@whi/crux-payload-parser": "^0.3.2",
-    "@whi/holo-hash": "^0.3.0",
-    "@whi/holochain-backdrop": "^2.2.0",
-    "@whi/holochain-client": "^0.80.1",
+    "@holochain/portal-zomelets": "file:../zomelets",
+    "@spartan-hc/app-interface-client": "file:../../app-interface-client-js",
+    "@spartan-hc/holo-hash": "^0.5.4",
+    "@spartan-hc/holochain-backdrop": "^2.2.3",
     "@whi/json": "^0.1.5",
-    "@whi/stdlog": "^0.3.4"
-  },
-  "devDependencies": {
+    "@whi/weblogger": "^0.2.1",
     "chai": "^4.3.4",
     "mocha": "^10.1.0",
     "why-is-node-running": "^2.2.0"

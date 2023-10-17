@@ -6,10 +6,10 @@ integrity:
   properties: ~
   zomes:
     - name: portal
-      bundled: ../../zomes/portal.wasm
+      bundled: ./zomes/portal.wasm
 coordinator:
   zomes:
-    - name: portal_api
-      bundled: ../../zomes/portal_api.wasm
+    - name: portal_csr
+      bundled: ./zomes/portal_csr.wasm
       dependencies:
         - name: portal

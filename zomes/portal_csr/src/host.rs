@@ -1,3 +1,8 @@
+use crate::{
+    hdk,
+    hc_crud,
+};
+
 use std::collections::BTreeMap;
 use hdk::prelude::*;
 use holo_hash::DnaHash;
@@ -9,10 +14,10 @@ use portal::{
     LinkTypes,
 
     HostEntry,
+
+    Metadata,
 };
 use crate::{
-    AppResult,
-
     ANCHOR_HOSTS,
 };
 
@@ -27,11 +32,11 @@ pub struct CreateInput {
     pub cap_access: Option<CapAccess>,
     pub published_at: Option<u64>,
     pub last_updated: Option<u64>,
-    pub metadata: Option<BTreeMap<String, rmpv::Value>>,
+    pub metadata: Option<Metadata>,
 }
 
 
-pub fn create(input: CreateInput) -> AppResult<Entity<HostEntry>> {
+pub fn create(input: CreateInput) -> ExternResult<Entity<HostEntry>> {
     debug!("Creating Host of {}: {:?}", input.dna, input.granted_functions );
     let pubkey = agent_info()?.agent_initial_pubkey;
     let default_now = now()?;
@@ -58,7 +63,7 @@ pub fn create(input: CreateInput) -> AppResult<Entity<HostEntry>> {
 
     { // Path via Agent's Hosts
 	debug!("Hosting anchor: {}.{}", ANCHOR_HOSTS, input.dna.to_string() );
-	let (_, pathhash ) = hc_utils::path( ANCHOR_HOSTS, vec![
+	let (_, pathhash ) = portal_sdk::path( ANCHOR_HOSTS, vec![
 	    input.dna.to_string(),
 	]);
 	entity.link_from( &pathhash, LinkTypes::Host, None )?;
@@ -73,9 +78,9 @@ pub struct GetInput {
     pub dna: DnaHash,
 }
 
-pub fn list_links (input: GetInput) -> AppResult<Vec<ActionHash>> {
+pub fn list_links (input: GetInput) -> ExternResult<Vec<ActionHash>> {
     debug!("Get links from hosting anchor: {}.{}", ANCHOR_HOSTS, &input.dna.to_string() );
-    let (_, pathhash ) = hc_utils::path( ANCHOR_HOSTS, vec![
+    let (_, pathhash ) = portal_sdk::path( ANCHOR_HOSTS, vec![
 	&input.dna.to_string(),
     ]);
     let links = get_links( pathhash, LinkTypes::Host, None )?;
@@ -88,7 +93,7 @@ pub fn list_links (input: GetInput) -> AppResult<Vec<ActionHash>> {
     )
 }
 
-pub fn list (input: GetInput) -> AppResult<Vec<Entity<HostEntry>>> {
+pub fn list (input: GetInput) -> ExternResult<Vec<Entity<HostEntry>>> {
     let addrs = list_links( input )?;
     let mut hosts : Vec<Entity<HostEntry>> = Vec::new();
 
