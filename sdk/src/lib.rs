@@ -9,9 +9,65 @@ use hdi_extensions::{
 };
 use hdk::prelude::*;
 use hdk::hash_path::path::{ Component };
+use holo_hash::DnaHash;
 
 
 
+
+//
+// General-use Types
+//
+pub type Payload = rmpv::Value;
+
+
+
+//
+// Input defintions
+//
+pub type RemoteCallInput = RemoteCallDetails<String, String, Payload>;
+pub type BridgeCallInput = BridgeCallDetails<String, String, Payload>;
+
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct DnaZomeFunction {
+    pub dna: DnaHash,
+    pub zome: ZomeName,
+    pub function: FunctionName,
+}
+
+
+// Input Structs
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct RemoteCallDetails<Z,F,I>
+where
+    Z: Into<ZomeName>,
+    F: Into<FunctionName>,
+    I: Serialize + core::fmt::Debug,
+{
+    pub dna: DnaHash,
+    pub zome: Z,
+    pub function: F,
+    pub payload: I,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct BridgeCallDetails<Z,F,P>
+where
+    Z: Into<ZomeName>,
+    F: Into<FunctionName>,
+    P: Serialize + core::fmt::Debug,
+{
+    pub dna: DnaHash,
+    pub zome: Z,
+    pub function: F,
+    pub payload: P,
+}
+
+
+
+//
+// Path creation helper
+//
 pub fn path<T>( base: &str, segments: T ) -> (Path, EntryHash)
 where
     T: IntoIterator,
@@ -37,6 +93,9 @@ where
 
 
 
+//
+// ZomeCallResponse handler
+//
 pub fn zome_call_response_as_result(response: ZomeCallResponse) -> ExternResult<ExternIO> {
     Ok( match response {
 	ZomeCallResponse::Ok(bytes)

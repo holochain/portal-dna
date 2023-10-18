@@ -13,5 +13,6 @@ name = "portal_sdk"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
+rmpv = { version = "1.0.0", features = ["with-serde"] }
 serde = "1"
 whi_hdk_extensions = "0.4"

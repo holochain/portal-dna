@@ -35,6 +35,7 @@ const APP_PORT				= 23_567;
 let client;
 let alice_client, alice_csr;
 let bobby_client, bobby_csr;
+let carol_client, carol_csr;
 
 
 describe("Portal", () => {
@@ -54,6 +55,7 @@ describe("Portal", () => {
 	    "actors": [
 		"alice",
 		"bobby",
+		"carol",
 	    ],
 	});
 
@@ -63,12 +65,11 @@ describe("Portal", () => {
 
 	alice_client			= await client.app( "test-alice" );
 	bobby_client			= await client.app( "test-bobby" );
-
-	// alice_orm			= alice_client.orm;
-	// bobby_orm			= bobby_client.orm;
+	carol_client			= await client.app( "test-carol" );
 
 	alice_csr			= alice_client.createZomeInterface( "portal", "portal_csr", PortalCSRZomelet ).functions;
 	bobby_csr			= bobby_client.createZomeInterface( "portal", "portal_csr", PortalCSRZomelet ).functions;
+	carol_csr			= carol_client.createZomeInterface( "portal", "portal_csr", PortalCSRZomelet ).functions;
 
 	// Must call whoami on each cell to ensure that init has finished.
 	{
@@ -79,9 +80,13 @@ describe("Portal", () => {
 	    let whoami			= await bobby_csr.whoami();
 	    log.normal("Bobby whoami: %s", whoami.pubkey.initial );
 	}
+	{
+	    let whoami			= await carol_csr.whoami();
+	    log.normal("Carol whoami: %s", whoami.pubkey.initial );
+	}
     });
 
-    linearSuite("Host", host_tests );
+    linearSuite("Host", function () { host_tests.call( this, holochain ) });
 
     after(async () => {
 	await holochain.destroy();
@@ -91,32 +96,31 @@ describe("Portal", () => {
 
 
 
-function host_tests () {
+const dna_hash				= "uhC0kXracwD-PyrSU5m_unW3GA7vV1fY1eHH-0qV5HG7Y7s-DwLa5";
+const zome_funcs			= {
+    "zome_name": [
+	"func_name",
+    ],
+}
+
+function host_tests ( holochain ) {
 
     it("should register hosts", async function () {
-	const host			= await alice_csr.register_host({
-	    "dna": "uhC0kXracwD-PyrSU5m_unW3GA7vV1fY1eHH-0qV5HG7Y7s-DwLa5",
-	    "granted_functions": {
-		"Listed": [
-		    [ "testing", "testing" ],
-		],
-	    },
+	await bobby_csr.register_host({
+	    "dna": dna_hash,
+	    "zomes": zome_funcs,
 	});
 
-	await bobby_csr.register_host({
-	    "dna": "uhC0kXracwD-PyrSU5m_unW3GA7vV1fY1eHH-0qV5HG7Y7s-DwLa5",
-	    "granted_functions": {
-		"Listed": [
-		    [ "testing", "testing" ],
-		],
-	    },
+	await carol_csr.register_host({
+	    "dna": dna_hash,
+	    "zomes": zome_funcs,
 	});
+
+	await holochain.admin.disableApp( "test-carol" );
     });
 
     it("should get registered hosts", async function () {
-	const hosts			= await alice_csr.get_registered_hosts({
-	    "dna": "uhC0kXracwD-PyrSU5m_unW3GA7vV1fY1eHH-0qV5HG7Y7s-DwLa5",
-	});
+	const hosts			= await alice_csr.get_registered_hosts( dna_hash );
 
 	expect( hosts			).to.have.length( 2 );
     });
@@ -127,7 +131,61 @@ function host_tests () {
 	expect( resp			).to.be.true;
     });
 
-    linearSuite("Host", async () => {
+    it("should get hosts for zome/function", async function () {
+	const hosts		= await alice_csr.get_hosts_for_zome_function({
+	    "dna": dna_hash,
+	    "zome": "zome_name",
+	    "function": "func_name",
+	});
+
+	expect( hosts			).to.have.length( 2 );
+    });
+
+    it("should get an available host for zome/function", async function () {
+	const host_pubkey		= await alice_csr.get_available_host_for_zome_function({
+	    "dna": dna_hash,
+	    "zome": "zome_name",
+	    "function": "func_name",
+	});
+
+	expect( host_pubkey		).to.deep.equal( bobby_client.agent_id );
+    });
+
+    linearSuite("Errors", async () => {
+
+	it("should fail to get hosts for zome/function because invalid 'dna' input", async function () {
+	    await expect_reject( async () => {
+		await alice_csr.get_hosts_for_zome_function({
+		    "dna": alice_client.agent_id,
+		});
+	    }, "prefix did not match" );
+	});
+
+	it("should fail to get hosts for zome/function because invalid 'zome' input", async function () {
+	    await expect_reject( async () => {
+		await alice_csr.get_hosts_for_zome_function({
+		    "dna": dna_hash,
+		    "zome": null,
+		});
+	    }, "Expected 'zome' input to be a string" );
+	});
+
+	it("should fail to get hosts for zome/function because invalid 'function' input", async function () {
+	    await expect_reject( async () => {
+		await alice_csr.get_hosts_for_zome_function({
+		    "dna": dna_hash,
+		    "zome": "zome_name",
+		    "function": null,
+		});
+	    }, "Expected 'function' input to be a string" );
+	});
+
+	it("should fail to ping host", async function () {
+	    await expect_reject( async () => {
+		await alice_csr.ping( carol_client.agent_id );
+	    }, "within 0.1 second(s)" );
+	});
+
     });
 
 }

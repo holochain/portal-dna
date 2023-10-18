@@ -19,16 +19,14 @@ use hc_crud::{
 };
 use portal::{
     EntryTypesUnit,
-
     HostEntry,
-
+};
+use portal_sdk::{
     Payload,
-
-    BridgeCallDetails,
-
+    DnaZomeFunction,
     RemoteCallInput,
     BridgeCallInput,
-    DnaZomeFunction,
+    BridgeCallDetails,
 };
 
 

@@ -812,6 +812,7 @@ dependencies = [
 name = "hc_portal_sdk"
 version = "0.8.0"
 dependencies = [
+ "rmpv",
  "serde",
  "whi_hdk_extensions",
 ]

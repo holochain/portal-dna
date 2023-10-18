@@ -1,9 +1,8 @@
 use crate::hdi;
 
-use std::collections::BTreeMap;
 use hdi::prelude::*;
-
 use crate::{
+    Metadata,
     CommonFields,
 };
 
@@ -22,7 +21,7 @@ pub struct HostEntry {
     pub author: AgentPubKey,
     pub published_at: u64,
     pub last_updated: u64,
-    pub metadata: BTreeMap<String, rmpv::Value>,
+    pub metadata: Metadata,
 }
 
 impl<'a> CommonFields<'a> for HostEntry {
@@ -35,7 +34,7 @@ impl<'a> CommonFields<'a> for HostEntry {
     fn last_updated(&'a self) -> &'a u64 {
 	&self.last_updated
     }
-    fn metadata(&'a self) -> &'a BTreeMap<String, rmpv::Value> {
+    fn metadata(&'a self) -> &'a Metadata {
 	&self.metadata
     }
 }
