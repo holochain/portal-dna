@@ -47,7 +47,7 @@ export const PortalCSRZomelet		= new Zomelet({
     async ping ( input ) {
 	this.log.trace("Pinging host '%s'", input );
 	return await this.call( input, {
-	    "timeout": 100,
+	    "timeout": 1_000,
 	});
     },
     // "pong":				true, // Not intended for client-side calling

@@ -1,0 +1,15 @@
+manifest_version: "1"
+name: content_dna
+integrity:
+  origin_time: 2023-01-01T00:00:00.000000Z
+  network-seed: ~
+  properties: ~
+  zomes:
+    - name: content
+      bundled: ../../zomes/content.wasm
+coordinator:
+  zomes:
+    - name: content_csr
+      bundled: ../../zomes/content_csr.wasm
+      dependencies:
+        - name: content

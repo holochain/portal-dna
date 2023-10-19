@@ -1,3 +1,4 @@
+.PHONY:			FORCE
 
 SHELL			= bash
 NAME			= portal
@@ -118,16 +119,24 @@ publish-crate:			test-debug .cargo/credentials
 #
 # Testing
 #
+CONTENT_DNA			= tests/content.dna
+
+tests/%.dna:			FORCE
+	cd tests; make $*.dna
 test:				test-unit test-integration
 test-debug:			test-unit test-integration-debug
 
-test-unit:			test-unit-portal test-unit-portal_csr
-test-unit-%:
-	cd zomes;		RUST_BACKTRACE=1 cargo test $* -- --nocapture
+# Unit tests
+test-crate:
+	cd $(SRC); CARGO_TARGET_DIR=../target cargo test --quiet --tests
+test-crate-debug:
+	cd $(SRC); RUST_BACKTRACE=1 CARGO_TARGET_DIR=../target cargo test -- --nocapture --show-output
+test-unit:
+	SRC=zomes make test-crate
+test-unit-debug:
+	SRC=zomes make test-crate-debug
 
-
-
-# DNAs
+# Integration tests
 test-setup:			tests/node_modules
 
 test-integration:
@@ -135,9 +144,9 @@ test-integration:
 test-integration-debug:
 	make test-portal-debug
 
-test-portal:			test-setup $(PORTAL_DNA)
+test-portal:			test-setup $(PORTAL_DNA) $(CONTENT_DNA)
 	cd tests; RUST_LOG=none LOG_LEVEL=fatal npx mocha integration/test_portal.js
-test-portal-debug:		test-setup $(PORTAL_DNA)
+test-portal-debug:		test-setup $(PORTAL_DNA) $(CONTENT_DNA)
 	cd tests; RUST_LOG=info LOG_LEVEL=trace npx mocha integration/test_portal.js
 
 

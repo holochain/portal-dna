@@ -30,6 +30,7 @@ import {
 
 const __dirname				= path.dirname( new URL(import.meta.url).pathname );
 const PORTAL_DNA_PATH			= path.join( __dirname, "../../portal.dna" );
+const TEST_DNA_PATH			= path.join( __dirname, "../content.dna" );
 const APP_PORT				= 23_567;
 
 let client;
@@ -40,6 +41,7 @@ let carol_client, carol_csr;
 
 describe("Portal", () => {
     const holochain			= new Holochain({
+	"timeout": 60_000,
 	"default_stdout_loggers": process.env.LOG_LEVEL === "trace",
     });
 
@@ -49,6 +51,7 @@ describe("Portal", () => {
 	const actors			= await holochain.backdrop({
 	    "test": {
 		"portal":	PORTAL_DNA_PATH,
+		"content":	TEST_DNA_PATH,
 	    },
 	}, {
 	    "app_port": APP_PORT,
@@ -183,7 +186,7 @@ function host_tests ( holochain ) {
 	it("should fail to ping host", async function () {
 	    await expect_reject( async () => {
 		await alice_csr.ping( carol_client.agent_id );
-	    }, "within 0.1 second(s)" );
+	    }, "within 1 second(s)" );
 	});
 
     });

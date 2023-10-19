@@ -1,0 +1,16 @@
+[package]
+name = "content"
+version = "0.0.0"
+edition = "2018"
+
+[lib]
+name = "content"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+serde = "1"
+rmpv = { version = "1.0.0", features = ["with-serde"] }
+whi_hdi_extensions = "0.4"
+
+# temporary fix for compile error in
+getrandom = { version = "=0.2.7", features = ["custom"] }

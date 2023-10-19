@@ -1,0 +1,13 @@
+[package]
+name = "content_csr"
+version = "0.0.0"
+edition = "2018"
+
+[lib]
+name = "content_csr"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+content = { path = "../content" }
+hc_portal_sdk = { path = "../../../sdk" }
+serde = "1"
