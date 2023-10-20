@@ -255,14 +255,22 @@ fn handler_custom_remote_call(input: CustomRemoteCallInput) -> ExternResult<Payl
 	payload: input.call.payload,
     };
 
+    debug!(
+        "Remote calling host ({}) with call: {}::{}->{}( ... )",
+        input.host,
+        call_details.dna,
+        call_details.zome,
+        call_details.function,
+    );
     let response = call_remote(
-	input.host,
+	input.host.clone(),
 	"portal_csr",
 	"bridge_call".into(),
 	None,
 	call_details,
     )?;
 
+    debug!("Remote host ({}) responded", input.host );
     let result = portal_sdk::zome_call_response_as_result( response )?;
 
     Ok(

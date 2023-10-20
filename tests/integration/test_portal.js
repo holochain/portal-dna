@@ -87,6 +87,10 @@ describe("Portal", () => {
 	    let whoami			= await carol_csr.whoami();
 	    log.normal("Carol whoami: %s", whoami.pubkey.initial );
 	}
+	{
+	    let whoami			= await bobby_client.orm.content.content_csr.whoami();
+	    log.normal("Bobby [content] whoami: %s", new AgentPubKey( whoami.agent_initial_pubkey ) );
+	}
     });
 
     linearSuite("Host", function () { host_tests.call( this, holochain ) });
@@ -152,6 +156,26 @@ function host_tests ( holochain ) {
 	});
 
 	expect( host_pubkey		).to.deep.equal( bobby_client.agent_id );
+    });
+
+    it("should call remote zome/function", async function () {
+	this.timeout( 10_000 );
+
+	const content			= {
+	    "name": "greeting",
+	    "content": "Hello, world!",
+	};
+	const content_id		= await bobby_client.orm.content.content_csr.create_content( content );
+	const result			= await alice_csr.remote_call({
+	    "dna": bobby_client.roles.content,
+	    "zome": "content_csr",
+	    "function": "get_content",
+	    "payload": {
+		"id": content_id,
+	    },
+	});
+
+	expect( result			).to.deep.equal( content );
     });
 
     linearSuite("Errors", async () => {

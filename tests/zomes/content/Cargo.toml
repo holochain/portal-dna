@@ -9,7 +9,6 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 serde = "1"
-rmpv = { version = "1.0.0", features = ["with-serde"] }
 whi_hdi_extensions = "0.4"
 
 # temporary fix for compile error in

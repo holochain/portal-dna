@@ -1,7 +1,6 @@
 pub use content::hdi_extensions;
 pub use portal_sdk::hdk;
 pub use portal_sdk::hdk_extensions;
-pub use portal_sdk::rmpv;
 
 use hdk::prelude::*;
 use hdk_extensions::{
@@ -43,6 +42,7 @@ fn init(_: ()) -> ExternResult<InitCallbackResult> {
         ],
     });
 
+    debug!("Register self ({}) result: {:#?}", dna_info()?.hash, result );
     if let Err(err) = result {
         if let WasmError { error: WasmErrorInner::Host(msg), .. } = &err {
             if !msg.contains("Role not found") {
@@ -66,6 +66,7 @@ pub fn create_content(content: ContentEntry) -> ExternResult<ActionHash> {
     debug!("Creating new content entry: {:#?}", content );
     let action_hash = create_entry( content.to_input() )?;
 
+    debug!("Returning action hash: {}", action_hash );
     Ok( action_hash )
 }
 

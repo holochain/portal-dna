@@ -4,6 +4,8 @@ pub use hdk_extensions::hdk;
 pub use hdk_extensions::hdi_extensions;
 pub use hdk_extensions;
 pub use rmpv;
+pub use hc_crud;
+pub use portal_types;
 
 use hdi_extensions::{
     guest_error,
@@ -11,7 +13,6 @@ use hdi_extensions::{
 use hdk::prelude::*;
 use hdk::hash_path::path::{ Component };
 use holo_hash::DnaHash;
-
 
 
 
@@ -112,46 +113,25 @@ pub fn zome_call_response_as_result(response: ZomeCallResponse) -> ExternResult<
 
 
 
-pub fn call_local_dna_zome<T, A>(role_name: &str, zome: &str, func: &str, input: A) -> ExternResult<T>
-where
-    T: serde::de::DeserializeOwned + std::fmt::Debug,
-    A: serde::Serialize + std::fmt::Debug,
-{
-    debug!("Calling target cell '{}' {}->{}()", role_name, zome, func );
-    let response = call(
-        CallTargetCell::OtherRole( role_name.to_string() ),
-        zome,
-        func.into(),
-        None,
-        input,
-    )?;
-
-    let result = zome_call_response_as_result( response )?;
-    let payload : T = result.decode()
-        .map_err( |err| guest_error!(format!("{:?}", err )) )?;
-
-    Ok( payload )
-}
-
-
-
 #[macro_export]
 macro_rules! call_local_cell {
     ( $role:literal, $zome:literal, $fn:literal, $($input:tt)+ ) => {
         {
-            use portal_sdk::hdk;
+            use portal_sdk::hdk::prelude::*;
             use portal_sdk::hdi_extensions::guest_error;
 
-            match hdk::prelude::call(
-                hdk::prelude::CallTargetCell::OtherRole( $role.into() ),
+            let call_response = call(
+                CallTargetCell::OtherRole( $role.into() ),
                 $zome,
                 $fn.into(),
                 None,
                 $($input)+,
-            )? {
-                hdk::prelude::ZomeCallResponse::Ok(extern_io) => Ok(extern_io),
-                hdk::prelude::ZomeCallResponse::NetworkError(msg) => Err(guest_error!(format!("{}", msg))),
-                hdk::prelude::ZomeCallResponse::CountersigningSession(msg) => Err(guest_error!(format!("{}", msg))),
+            )?;
+
+            match call_response {
+                ZomeCallResponse::Ok(extern_io) => Ok(extern_io),
+                ZomeCallResponse::NetworkError(msg) => Err(guest_error!(format!("{}", msg))),
+                ZomeCallResponse::CountersigningSession(msg) => Err(guest_error!(format!("{}", msg))),
                 _ => Err(guest_error!(format!("Zome call response: Unauthorized"))),
             }
         }
@@ -162,20 +142,20 @@ macro_rules! call_local_cell {
 macro_rules! call_local_cell_decode {
     ( $role:literal, $zome:literal, $fn:literal, $($input:tt)+ ) => {
         {
-            use portal_sdk::hdk;
+            use portal_sdk::hdk::prelude::*;
 
             portal_sdk::call_local_cell!( $role, $zome, $fn, $($input)+ )?
                 .decode()
-                .map_err(|err| hdk::prelude::wasm_error!(hdk::prelude::WasmErrorInner::from(err)) )
+                .map_err(|err| wasm_error!(WasmErrorInner::from(err)) )
         }
     };
     ( $into_type:ident, $role:literal, $zome:literal, $fn:literal, $($input:tt)+ ) => {
         {
-            use portal_sdk::hdk;
+            use portal_sdk::hdk::prelude::*;
 
             portal_sdk::call_local_cell!( $role, $zome, $fn, $($input)+ )?
                 .decode::<$into_type>()
-                .map_err(|err| hdk::prelude::wasm_error!(hdk::prelude::WasmErrorInner::from(err)) )
+                .map_err(|err| wasm_error!(WasmErrorInner::from(err)) )
         }
     };
 }
@@ -204,21 +184,26 @@ pub struct RegisterInput {
 macro_rules! register {
     ( $($def:tt)* ) => {
         {
-            let input = portal_sdk::RegisterInput $($def)*;
+            use portal_sdk::hdk::prelude::*;
+            use portal_sdk::hc_crud::Entity;
+            use portal_sdk::portal_types::HostEntry;
 
-            type IgnoreResult = ExternResult<rmpv::Value>;
+            let input = portal_sdk::RegisterInput $($def)*;
+            let payload = portal_sdk::RegisterHostInput {
+                dna: input.dna,
+                granted_functions: portal_sdk::ListedFunctions {
+                    Listed: input.granted_functions,
+                },
+            };
+
+            type Response = Entity<HostEntry>;
 
             portal_sdk::call_local_cell_decode!(
-                IgnoreResult,
+                Response,
                 "portal",
                 "portal_csr",
                 "register_host",
-                portal_sdk::RegisterHostInput {
-                    dna: input.dna,
-                    granted_functions: portal_sdk::ListedFunctions {
-                        Listed: input.granted_functions,
-                    },
-                }
+                payload
             )
         }
     };

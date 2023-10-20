@@ -43,14 +43,12 @@ export const PortalCSRZomelet		= new Zomelet({
     },
     "my_host_entries":			true,
     "latest_host_entry_for_dna":	true,
-    "bridge_call":			true,
     async ping ( input ) {
 	this.log.trace("Pinging host '%s'", input );
 	return await this.call( input, {
 	    "timeout": 1_000,
 	});
     },
-    // "pong":				true, // Not intended for client-side calling
     async register_host ( input ) {
 	if ( input.zomes ) {
 	    if ( input.granted_functions )
@@ -111,19 +109,36 @@ export const PortalCSRZomelet		= new Zomelet({
     //
     async get_available_host_for_zome_function ( input ) {
 	const hosts			= await this.functions.get_hosts_for_zome_function( input );
-
-	const available_host		= await Promise.any(
-	    hosts.map( async host => {
-		try {
-		    await this.functions.ping( host.author );
-		} catch (err) {
-		    this.log.debug("Ping to '%s' failed with: %s", host.author, err );
-		}
+	const host_pings		= hosts.map( async host => {
+	    try {
+		await this.functions.ping( host.author );
 		return host.author;
-	    })
-	);
+	    } catch (err) {
+		this.log.debug("Ping to '%s' failed with: %s", host.author, err );
+		return null;
+	    }
+	});
+	const available_host		= await Promise.any( host_pings );
 
 	return available_host;
+    },
+    async remote_call ( input ) {
+	const host			= await this.functions.get_available_host_for_zome_function({
+	    "dna": input.dna,
+	    "zome": input.zome,
+	    "function": input.function,
+	});
+
+	this.log.info("Remote calling host (%s) for %s::%s->%s", host, input.dna, input.zome, input.function, input.payload );
+	return await this.functions.custom_remote_call({
+	    host,
+	    "call": {
+		"dna": input.dna,
+		"zome": input.zome,
+		"function": input.function,
+		"payload": input.payload,
+	    },
+	});
     },
 });
 

@@ -14,11 +14,11 @@ TARGET			= release
 TARGET_DIR		= target/wasm32-unknown-unknown/release
 COMMON_SOURCE_FILES	= Makefile zomes/Cargo.toml
 INT_SOURCE_FILES	= $(COMMON_SOURCE_FILES) \
-				types/Cargo.toml types/src/*.rs \
-				scoped_types/Cargo.toml scoped_types/src/*.rs \
-				zomes/%/Cargo.toml zomes/%/src/*.rs
+				zomes/%/Cargo.toml zomes/%/src/*.rs \
+				types/Cargo.toml types/src/*.rs
 CSR_SOURCE_FILES	= $(COMMON_SOURCE_FILES) $(INT_SOURCE_FILES) \
 				zomes/%_csr/Cargo.toml zomes/%_csr/src/*.rs \
+				types/Cargo.toml types/src/*.rs \
 				sdk/Cargo.toml sdk/src/*.rs
 
 
