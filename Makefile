@@ -104,15 +104,20 @@ npm-use-backdrop-%:
 
 
 #
-# Packages
+# Rust Packages
 #
-preview-crate:			test-debug
-	cd portal_types; cargo publish --dry-run --allow-dirty
-	touch portal_types/src/lib.rs # Force rebuild to fix issue after dry run
-publish-crate:			test-debug .cargo/credentials
-	cd portal_types; cargo publish
 .cargo/credentials:
 	cp ~/$@ $@
+preview-types-crate:		test-debug
+	cd types; cargo publish --dry-run --allow-dirty
+	touch types/src/lib.rs # Force rebuild to fix 'missing debug macro' issue after dry run
+publish-types-crate:		test-debug .cargo/credentials
+	cd types; cargo publish
+preview-sdk-crate:		test-debug
+	cd sdk; cargo publish --dry-run --allow-dirty
+	touch sdk/src/lib.rs # Force rebuild to fix 'missing debug macro' issue after dry run
+publish-sdk-crate:		test-debug .cargo/credentials
+	cd sdk; cargo publish
 
 
 

@@ -1,8 +1,12 @@
 [package]
 name = "hc_portal_types"
-version = "0.0.0"
+version = "0.8.0"
 authors = ["Matthew Brisebois <matthew.brisebois@holo.host>"]
 edition = "2018"
+license = "CAL-1.0"
+repository = "https://github.com/holochain/portal-dna"
+description = "Definitions used by the Portal DNA Zomes"
+readme = "README.md"
 
 [lib]
 name = "portal_types"

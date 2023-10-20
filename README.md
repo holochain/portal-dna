@@ -1,3 +1,7 @@
+[![](https://img.shields.io/crates/v/hc_portal_types?style=flat-square&label=types)](https://crates.io/crates/hc_portal_types)
+[![](https://img.shields.io/crates/v/hc_portal_sdk?style=flat-square&label=sdk)](https://crates.io/crates/hc_portal_sdk)
+[![](https://img.shields.io/npm/v/@holochain/portal-zomelets/latest?style=flat-square&label=zomelets)](http://npmjs.com/package/@holochain/portal-zomelets)
+
 
 # Portal DNA
 A DNA for providing zome function access across networks.
@@ -9,7 +13,10 @@ A DNA for providing zome function access across networks.
 
 
 ### Portal Types Crate
-See [portal_types/README.md](portal_types/README.md)
+See [types/README.md](types/README.md)
+
+### Portal SDK Crate
+See [sdk/README.md](sdk/README.md)
 
 
 ### Holochain Version Map
@@ -17,11 +24,11 @@ For information on which versions of this package work for each Holochain releas
 [docs/Holochain_Version_Map.md](docs/Holochain_Version_Map.md)
 
 
-### Build the WASM
+### Build
 Clone the Github repo
 [holochain/portal-dna](https://github.com/holochain/portal-dna) and run
 
 ```bash
-nix-shell
-[nix-shell$] make bundled/portal.dna
+nix develop
+[nix-shell$] make portal.dna
 ```
