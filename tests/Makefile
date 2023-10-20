@@ -1,11 +1,11 @@
 
-COMMON_SOURCE_FILES	= Makefile zomes/Cargo.toml zomes/Cargo.lock
+COMMON_SOURCE_FILES	= Makefile zomes/Cargo.toml zomes/Cargo.lock \
+				../types/Cargo.toml ../types/src/*.rs \
+				../sdk/Cargo.toml ../sdk/src/*.rs
 DNA_SOURCE_FILES	= dnas/%/dna.yaml \
 				zomes/*/Cargo.toml zomes/*/src/*.rs \
 				$(COMMON_SOURCE_FILES)
 ZOME_SOURCE_FILES	= zomes/%/Cargo.toml zomes/%/src/*.rs \
-				../types/Cargo.toml ../types/src/*.rs \
-				../sdk/Cargo.toml ../sdk/src/*.rs \
 				$(COMMON_SOURCE_FILES)
 
 # MODE			= production

@@ -160,12 +160,12 @@ macro_rules! call_local_cell_decode {
     };
 }
 
-pub type ZomeFunction = (&'static str, &'static str);
+pub type ZomeFunction<T1,T2> = (T1, T2);
 
 #[derive(Debug, Serialize, Clone)]
 #[allow(non_snake_case)]
 pub struct ListedFunctions {
-    pub Listed: Vec<ZomeFunction>,
+    pub Listed: Vec<ZomeFunction<String, String>>,
 }
 
 #[derive(Debug, Serialize)]
@@ -175,9 +175,13 @@ pub struct RegisterHostInput {
 }
 
 #[derive(Debug, Serialize)]
-pub struct RegisterInput {
+pub struct RegisterInput<T1,T2>
+where
+    T1: Into<String>,
+    T2: Into<String>,
+{
     pub dna: DnaHash,
-    pub granted_functions: Vec<ZomeFunction>,
+    pub granted_functions: Vec<ZomeFunction<T1,T2>>,
 }
 
 #[macro_export]
@@ -192,7 +196,9 @@ macro_rules! register {
             let payload = portal_sdk::RegisterHostInput {
                 dna: input.dna,
                 granted_functions: portal_sdk::ListedFunctions {
-                    Listed: input.granted_functions,
+                    Listed: input.granted_functions.into_iter()
+                        .map( |(zome, func)| (zome.into(), func.into()) )
+                        .collect()
                 },
             };
 
@@ -205,6 +211,29 @@ macro_rules! register {
                 "register_host",
                 payload
             )
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! register_if_exists {
+    ( $($def:tt)* ) => {
+        {
+            use portal_sdk::hdk::prelude::*;
+
+            let result = portal_sdk::register!( $($def)* );
+
+            debug!("Register self ({}) result: {:#?}", dna_info()?.hash, result );
+            match result {
+                Err(err) => match err {
+                    WasmError {
+                        error: WasmErrorInner::Host(ref msg),
+                        ..
+                    } if msg.contains("Role not found") => Ok(None),
+                    err => Err(err),
+                },
+                Ok(value) => Ok(Some(value)),
+            }
         }
     };
 }

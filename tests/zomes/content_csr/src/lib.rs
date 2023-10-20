@@ -32,24 +32,15 @@ pub struct RegisterHostInput {
 
 #[hdk_extern]
 fn init(_: ()) -> ExternResult<InitCallbackResult> {
-    debug!("'{}' init", zome_info()?.name );
+    let zome_name = zome_info()?.name;
+    debug!("'{}' init", zome_name );
 
-    // Register with portal if the cell is present
-    let result = portal_sdk::register!({
+    portal_sdk::register_if_exists!({
         dna: dna_info()?.hash,
         granted_functions: vec![
-            ( "content_csr", "get_content" ),
+            ( zome_name.0.as_ref(), "get_content" ),
         ],
-    });
-
-    debug!("Register self ({}) result: {:#?}", dna_info()?.hash, result );
-    if let Err(err) = result {
-        if let WasmError { error: WasmErrorInner::Host(msg), .. } = &err {
-            if !msg.contains("Role not found") {
-                return Err(err);
-            }
-        }
-    }
+    })?;
 
     Ok(InitCallbackResult::Pass)
 }
