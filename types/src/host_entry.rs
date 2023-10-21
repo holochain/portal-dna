@@ -11,6 +11,7 @@ use crate::{
 //
 // Host Entry
 //
+/// Defines the available zome calls for a specific host
 #[hdk_entry_helper]
 #[derive(Clone)]
 pub struct HostEntry {
