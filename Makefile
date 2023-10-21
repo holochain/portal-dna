@@ -25,15 +25,16 @@ CSR_SOURCE_FILES	= $(COMMON_SOURCE_FILES) $(INT_SOURCE_FILES) \
 #
 # Project
 #
-tests/package-lock.json:	tests/package.json
+%/package-lock.json:		%/package.json
 	touch $@
-tests/node_modules:		tests/package-lock.json
-	cd tests; \
+%/node_modules:			%/package-lock.json
+	cd $*; \
 	npm install
 	touch $@
 clean:
 	rm -rf \
 	    tests/node_modules \
+	    zomelets/node_modules \
 	    .cargo \
 	    target \
 	    $(PORTAL_DNA) \
@@ -119,7 +120,7 @@ preview-sdk-crate:		test-debug
 	touch sdk/src/lib.rs # Force rebuild to fix 'missing debug macro' issue after dry run
 publish-sdk-crate:		test-debug .cargo/credentials
 	cd sdk; cargo publish
-	touch types/src/lib.rs # Force rebuild to fix 'missing debug macro' issue after dry run
+	touch sdk/src/lib.rs # Force rebuild to fix 'missing debug macro' issue after dry run
 
 
 
@@ -144,7 +145,7 @@ test-unit-debug:
 	SRC=zomes make test-crate-debug
 
 # Integration tests
-test-setup:			tests/node_modules
+test-setup:			tests/node_modules zomelets/node_modules
 
 test-integration:
 	make test-portal

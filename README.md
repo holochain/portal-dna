@@ -12,6 +12,21 @@ A DNA for providing zome function access across networks.
 [![](https://img.shields.io/github/issues-pr-raw/holochain/portal-dna?style=flat-square)](https://github.com/holochain/portal-dna/pulls)
 
 
+## Usage
+
+### Host registration example
+See [./tests/zomes/content_csr/src/lib.rs](./tests/zomes/content_csr/src/lib.rs)
+
+### Cross-DHT call example
+See [./tests/integration/test_portal.js](./tests/integration/test_portal.js)
+
+### Holochain Version Map
+For information on which versions of this package work for each Holochain release, see
+[docs/Holochain_Version_Map.md](docs/Holochain_Version_Map.md)
+
+
+## Components
+
 ### Portal Types Crate
 See [types/README.md](types/README.md)
 
@@ -20,11 +35,9 @@ See [types/README.md](types/README.md)
 See [sdk/README.md](sdk/README.md)
 
 
-### Holochain Version Map
-For information on which versions of this package work for each Holochain release, see
-[docs/Holochain_Version_Map.md](docs/Holochain_Version_Map.md)
+### Portal Zomelets
+See [zomelets/README.md](zomelets/README.md)
 
-
-### Contributing
+## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md)
