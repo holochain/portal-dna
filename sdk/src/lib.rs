@@ -1,3 +1,9 @@
+//! Other Resources
+//!
+//! - Source code - [github.com/holochain/portal-dna](https://github.com/holochain/portal-dna)
+//! - Cargo package - [crates.io/crates/hc_portal_sdk](https://crates.io/crates/hc_portal_sdk)
+//!
+
 pub use hdk_extensions::hdi;
 pub use hdk_extensions::holo_hash;
 pub use hdk_extensions::hdk;
@@ -19,6 +25,7 @@ use holo_hash::DnaHash;
 //
 // General-use Types
 //
+/// A type for de/serializing any data
 pub type Payload = rmpv::Value;
 
 
@@ -26,11 +33,19 @@ pub type Payload = rmpv::Value;
 //
 // Input defintions
 //
+/// Input required for a remote call
 pub type RemoteCallInput = RemoteCallDetails<String, String, Payload>;
-pub type BridgeCallInput = BridgeCallDetails<String, String, Payload>;
+
+/// Input required for a remote call to a specific host
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct CustomRemoteCallInput {
+    pub host: AgentPubKey,
+    pub call: RemoteCallInput,
+}
 
 
-#[derive(Debug, Deserialize, Serialize)]
+/// Properties required for selecting a viable host
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct DnaZomeFunction {
     pub dna: DnaHash,
     pub zome: ZomeName,
@@ -39,6 +54,7 @@ pub struct DnaZomeFunction {
 
 
 // Input Structs
+/// Fields required for making a zome call
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct RemoteCallDetails<Z,F,I>
 where
@@ -52,24 +68,12 @@ where
     pub payload: I,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct BridgeCallDetails<Z,F,P>
-where
-    Z: Into<ZomeName>,
-    F: Into<FunctionName>,
-    P: Serialize + core::fmt::Debug,
-{
-    pub dna: DnaHash,
-    pub zome: Z,
-    pub function: F,
-    pub payload: P,
-}
-
 
 
 //
 // Path creation helper
 //
+/// Path creation helper
 pub fn path<T>( base: &str, segments: T ) -> (Path, EntryHash)
 where
     T: IntoIterator,
@@ -98,6 +102,7 @@ where
 //
 // ZomeCallResponse handler
 //
+/// Translate [`ZomeCallResponse`] into a [`Result`]
 pub fn zome_call_response_as_result(response: ZomeCallResponse) -> ExternResult<ExternIO> {
     Ok( match response {
 	ZomeCallResponse::Ok(bytes)
@@ -113,6 +118,7 @@ pub fn zome_call_response_as_result(response: ZomeCallResponse) -> ExternResult<
 
 
 
+/// Call a local cell zome function
 #[macro_export]
 macro_rules! call_local_cell {
     ( $role:literal, $zome:literal, $fn:literal, $($input:tt)+ ) => {
@@ -138,6 +144,7 @@ macro_rules! call_local_cell {
     };
 }
 
+/// Call a local cell zome function and decode the response
 #[macro_export]
 macro_rules! call_local_cell_decode {
     ( $role:literal, $zome:literal, $fn:literal, $($input:tt)+ ) => {
@@ -160,20 +167,24 @@ macro_rules! call_local_cell_decode {
     };
 }
 
+/// Define a zome function pair
 pub type ZomeFunction<T1,T2> = (T1, T2);
 
+/// Define a list of zome function pairs
 #[derive(Debug, Serialize, Clone)]
 #[allow(non_snake_case)]
 pub struct ListedFunctions {
     pub Listed: Vec<ZomeFunction<String, String>>,
 }
 
+/// Define a list of zome function pairs for a specific DNA
 #[derive(Debug, Serialize)]
 pub struct RegisterHostInput {
     pub dna: DnaHash,
     pub granted_functions: ListedFunctions,
 }
 
+/// Input required for macros [`register`] and [`register_if_exists`]
 #[derive(Debug, Serialize)]
 pub struct RegisterInput<T1,T2>
 where
@@ -184,9 +195,10 @@ where
     pub granted_functions: Vec<ZomeFunction<T1,T2>>,
 }
 
+/// Register a list of zome/functions in a locally running portal cell
 #[macro_export]
 macro_rules! register {
-    ( $($def:tt)* ) => {
+    ( $dna:literal, $zome:literal, $fn_name:literal, $($def:tt)* ) => {
         {
             use portal_sdk::hdk::prelude::*;
             use portal_sdk::hc_crud::Entity;
@@ -206,15 +218,25 @@ macro_rules! register {
 
             portal_sdk::call_local_cell_decode!(
                 Response,
-                "portal",
-                "portal_csr",
-                "register_host",
+                $dna,
+                $zome,
+                $fn_name,
                 payload
             )
         }
     };
+    ( $dna:literal, $zome:literal, $($def:tt)* ) => {
+        portal_sdk::register!( $dna, $zome, "register_host", $($def)* )
+    };
+    ( $dna:literal, $($def:tt)* ) => {
+        portal_sdk::register!( $dna, "portal_csr", $($def)* )
+    };
+    ( $($def:tt)* ) => {
+        portal_sdk::register!( "portal", $($def)* )
+    };
 }
 
+/// Same as `register!` but will fail silently if the portal cell is not present
 #[macro_export]
 macro_rules! register_if_exists {
     ( $($def:tt)* ) => {

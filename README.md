@@ -15,6 +15,7 @@ A DNA for providing zome function access across networks.
 ### Portal Types Crate
 See [types/README.md](types/README.md)
 
+
 ### Portal SDK Crate
 See [sdk/README.md](sdk/README.md)
 
@@ -24,11 +25,6 @@ For information on which versions of this package work for each Holochain releas
 [docs/Holochain_Version_Map.md](docs/Holochain_Version_Map.md)
 
 
-### Build
-Clone the Github repo
-[holochain/portal-dna](https://github.com/holochain/portal-dna) and run
+### Contributing
 
-```bash
-nix develop
-[nix-shell$] make portal.dna
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md)

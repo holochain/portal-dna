@@ -25,8 +25,8 @@ use portal_sdk::{
     Payload,
     DnaZomeFunction,
     RemoteCallInput,
-    BridgeCallInput,
-    BridgeCallDetails,
+    RemoteCallDetails,
+    CustomRemoteCallInput,
 };
 
 
@@ -93,7 +93,7 @@ pub fn latest_host_entry_for_dna(dna: &DnaHash) -> ExternResult<Option<HostEntry
     Ok( host_entry.map(|he| he.to_owned() ) )
 }
 
-fn handler_bridge_call(input: BridgeCallInput) -> ExternResult<Payload> {
+fn handler_bridge_call(input: RemoteCallInput) -> ExternResult<Payload> {
     let agent_info = agent_info()?;
 
     // Need to add a check here for this agent's registered zome functions
@@ -143,7 +143,7 @@ fn handler_bridge_call(input: BridgeCallInput) -> ExternResult<Payload> {
 }
 
 #[hdk_extern]
-fn bridge_call(input: BridgeCallInput) -> ExternResult<Payload> {
+fn bridge_call(input: RemoteCallInput) -> ExternResult<Payload> {
     let result = handler_bridge_call( input )?;
 
      Ok( result )
@@ -241,14 +241,8 @@ fn get_hosts_for_zome_function(input: DnaZomeFunction) -> ExternResult<Vec<Entit
 
 
 
-#[derive(Debug, Deserialize)]
-pub struct CustomRemoteCallInput {
-    host: AgentPubKey,
-    call: RemoteCallInput,
-}
-
 fn handler_custom_remote_call(input: CustomRemoteCallInput) -> ExternResult<Payload> {
-    let call_details = BridgeCallDetails {
+    let call_details = RemoteCallDetails {
 	dna: input.call.dna,
 	zome: input.call.zome,
 	function: input.call.function,

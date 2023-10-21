@@ -113,11 +113,13 @@ preview-types-crate:		test-debug
 	touch types/src/lib.rs # Force rebuild to fix 'missing debug macro' issue after dry run
 publish-types-crate:		test-debug .cargo/credentials
 	cd types; cargo publish
+	touch types/src/lib.rs # Force rebuild to fix 'missing debug macro' issue after dry run
 preview-sdk-crate:		test-debug
 	cd sdk; cargo publish --dry-run --allow-dirty
 	touch sdk/src/lib.rs # Force rebuild to fix 'missing debug macro' issue after dry run
 publish-sdk-crate:		test-debug .cargo/credentials
 	cd sdk; cargo publish
+	touch types/src/lib.rs # Force rebuild to fix 'missing debug macro' issue after dry run
 
 
 
@@ -157,6 +159,28 @@ test-portal-debug:		test-setup $(PORTAL_DNA) $(CONTENT_DNA)
 
 
 #
+# Documentation
+#
+TYPES_DOCS		= target/doc/portal_types/index.html
+SDK_DOCS		= target/doc/portal_sdk/index.html
+
+docs:			$(TYPES_DOCS) $(SDK_DOCS)
+$(TYPES_DOCS):		types/src/*
+	cd types; cargo test --doc
+	cd types; cargo doc
+	@echo -e "\x1b[37mOpen docs in file://$(shell pwd)/$(TYPES_DOCS)\x1b[0m";
+	touch types/src/lib.rs # Force rebuild to fix compile issue
+	touch $(TYPES_DOCS)
+$(SDK_DOCS):		sdk/src/*
+	cd sdk; cargo test --doc
+	cd sdk; cargo doc
+	@echo -e "\x1b[37mOpen docs in file://$(shell pwd)/$(SDK_DOCS)\x1b[0m";
+	touch sdk/src/lib.rs # Force rebuild to fix compile issue
+	touch $(SDK_DOCS)
+
+
+
+#
 # Repository
 #
 clean-remove-chaff:
@@ -180,9 +204,9 @@ prepare-zomelets-package:
 	cd zomelets; npx webpack
 	cd zomelets; MODE=production npx webpack
 	cd zomelets; gzip -kf dist/*.js
-preview-zomelets-package:	clean-files test prepare-zomelets-package
+preview-zomelets-package:	clean-files test-debug prepare-zomelets-package
 	cd zomelets; npm pack --dry-run .
-create-zomelets-package:	clean-files test prepare-zomelets-package
+create-zomelets-package:	clean-files test-debug prepare-zomelets-package
 	cd zomelets; npm pack .
-publish-zomelets-package:	clean-files test prepare-zomelets-package
+publish-zomelets-package:	clean-files test-debug prepare-zomelets-package
 	cd zomelets; npm publish --access public .

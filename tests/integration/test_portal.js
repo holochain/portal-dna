@@ -95,7 +95,8 @@ describe("Portal", () => {
 
     linearSuite("Host", function () { host_tests.call( this, holochain ) });
 
-    after(async () => {
+    after(async function () {
+	this.timeout( 5_000 );
 	await holochain.destroy();
     });
 
