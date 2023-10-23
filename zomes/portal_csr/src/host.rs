@@ -4,6 +4,7 @@ use crate::{
 };
 
 use std::collections::BTreeMap;
+use rand::seq::SliceRandom;
 use hdk::prelude::*;
 use holo_hash::DnaHash;
 use hc_crud::{
@@ -103,4 +104,12 @@ pub fn list (input: GetInput) -> ExternResult<Vec<Entity<HostEntry>>> {
     }
 
     Ok( hosts )
+}
+
+pub fn list_random (input: GetInput) -> ExternResult<Vec<Entity<HostEntry>>> {
+    let mut list = list( input )?;
+
+    list.shuffle(&mut rand::thread_rng());
+
+    Ok( list )
 }

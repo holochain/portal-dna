@@ -243,7 +243,6 @@ macro_rules! register_if_exists {
 
             let result = portal_sdk::register!( $($def)* );
 
-            debug!("Register self ({}) result: {:#?}", dna_info()?.hash, result );
             match result {
                 Err(err) => match err {
                     WasmError {
