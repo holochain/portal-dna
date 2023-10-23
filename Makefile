@@ -149,13 +149,20 @@ test-setup:			tests/node_modules zomelets/node_modules
 
 test-integration:
 	make test-portal
+	make test-no-portal
 test-integration-debug:
 	make test-portal-debug
+	make test-no-portal-debug
 
 test-portal:			test-setup $(PORTAL_DNA) $(CONTENT_DNA)
 	cd tests; RUST_LOG=none LOG_LEVEL=fatal npx mocha integration/test_portal.js
 test-portal-debug:		test-setup $(PORTAL_DNA) $(CONTENT_DNA)
 	cd tests; RUST_LOG=info LOG_LEVEL=trace npx mocha integration/test_portal.js
+
+test-no-portal:			test-setup $(CONTENT_DNA)
+	cd tests; RUST_LOG=none LOG_LEVEL=fatal npx mocha integration/test_no_portal.js
+test-no-portal-debug:		test-setup $(CONTENT_DNA)
+	cd tests; RUST_LOG=info LOG_LEVEL=trace npx mocha integration/test_no_portal.js
 
 
 

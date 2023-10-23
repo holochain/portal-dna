@@ -126,20 +126,18 @@ macro_rules! call_local_cell {
             use portal_sdk::hdk::prelude::*;
             use portal_sdk::hdi_extensions::guest_error;
 
-            let call_response = call(
+            call(
                 CallTargetCell::OtherRole( $role.into() ),
                 $zome,
                 $fn.into(),
                 None,
                 $($input)+,
-            )?;
-
-            match call_response {
+            ).and_then( |call_response| match call_response {
                 ZomeCallResponse::Ok(extern_io) => Ok(extern_io),
-                ZomeCallResponse::NetworkError(msg) => Err(guest_error!(format!("{}", msg))),
-                ZomeCallResponse::CountersigningSession(msg) => Err(guest_error!(format!("{}", msg))),
+                ZomeCallResponse::NetworkError(msg) => Err(guest_error!(format!("NetworkError: {}", msg))),
+                ZomeCallResponse::CountersigningSession(msg) => Err(guest_error!(format!("CountersigningSession: {}", msg))),
                 _ => Err(guest_error!(format!("Zome call response: Unauthorized"))),
-            }
+            })
         }
     };
 }
@@ -151,18 +149,18 @@ macro_rules! call_local_cell_decode {
         {
             use portal_sdk::hdk::prelude::*;
 
-            portal_sdk::call_local_cell!( $role, $zome, $fn, $($input)+ )?
-                .decode()
-                .map_err(|err| wasm_error!(WasmErrorInner::from(err)) )
+            portal_sdk::call_local_cell!( $role, $zome, $fn, $($input)+ ).and_then(
+                |extern_io| extern_io.decode().map_err(|err| wasm_error!(WasmErrorInner::from(err)) )
+            )
         }
     };
     ( $into_type:ident, $role:literal, $zome:literal, $fn:literal, $($input:tt)+ ) => {
         {
             use portal_sdk::hdk::prelude::*;
 
-            portal_sdk::call_local_cell!( $role, $zome, $fn, $($input)+ )?
-                .decode::<$into_type>()
-                .map_err(|err| wasm_error!(WasmErrorInner::from(err)) )
+            portal_sdk::call_local_cell!( $role, $zome, $fn, $($input)+ ).and_then(
+                |extern_io| extern_io.decode::<$into_type>().map_err(|err| wasm_error!(WasmErrorInner::from(err)) )
+            )
         }
     };
 }
@@ -249,8 +247,7 @@ macro_rules! register_if_exists {
             match result {
                 Err(err) => match err {
                     WasmError {
-                        error: WasmErrorInner::Host(ref msg),
-                        ..
+                        error: WasmErrorInner::Host(ref msg), ..
                     } if msg.contains("Role not found") => Ok(None),
                     err => Err(err),
                 },
