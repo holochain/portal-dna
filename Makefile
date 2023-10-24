@@ -101,8 +101,23 @@ npm-use-backdrop-public:
 npm-use-backdrop-local:
 npm-use-backdrop-%:
 	NPM_PACKAGE=@spartan-hc/holochain-backdrop LOCAL_PATH=../../node-holochain-backdrop make npm-reinstall-$*
-sha1sums:
-	@sha1sum portal.dna zomes/*.wasm
+
+last-release:
+	@git tag --list --sort=committerdate | grep -e '^v.*' | tail -n 1
+
+RELEASE_VERSION = v0.9.1
+RELEASE_PREP_DIR = ~/Downloads/Portal\ DNA\ Release\ Assets
+prepare-release:		$(PORTAL_DNA)
+	mkdir -p $(RELEASE_PREP_DIR)
+	cp portal.dna zomes/*.wasm $(RELEASE_PREP_DIR)
+	@if [ "$$(make -s last-release)" == "$(RELEASE_VERSION)" ]; then \
+		echo -e "\n\x1b[33mWARNING: current release version matches Makefile ($(RELEASE_VERSION)) \x1b[0m"; \
+	else \
+		git tag $(RELEASE_VERSION); \
+	fi
+	@echo -e "\n\x1b[37mRelease Asset Sha1sums\x1b[0m\n";
+	@bash -c "cd $(RELEASE_PREP_DIR); sha1sum *.dna *.wasm; echo ''"
+	ls -l $(RELEASE_PREP_DIR)
 
 
 #
