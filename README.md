@@ -22,7 +22,7 @@ See [./tests/integration/test_portal.js](./tests/integration/test_portal.js)
 
 ### Holochain Version Map
 For information on which versions of this package work for each Holochain release, see
-[docs/Holochain_Version_Map.md](docs/Holochain_Version_Map.md)
+[VERSIONS.md](VERSIONS.md)
 
 
 ## Components

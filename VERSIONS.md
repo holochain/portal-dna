@@ -1,4 +1,4 @@
-[back to README.md](../README.md)
+[back to README.md](README.md)
 
 # Version Mappings
 

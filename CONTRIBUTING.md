@@ -76,7 +76,7 @@ https://github.com/holochain/portal-dna/releases
 
 #### Update Holochain Version Map
 
-Update versions in [docs/Holochain_Version_Map.md](docs/Holochain_Version_Map.md)
+Update versions in [VERSIONS.md](VERSIONS.md)
 
 
 ### Testing
