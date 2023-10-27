@@ -106,14 +106,14 @@ clean-files-all:	clean-remove-chaff
 clean-files-all-force:	clean-remove-chaff
 	git clean -fdx
 
-PRE_HDK_VERSION = "0.1.3-beta-rc.1"
-NEW_HDK_VERSION = "0.1.4"
+PRE_HDK_VERSION = "0.1.4"
+NEW_HDK_VERSION = "0.1.5"
 
-PRE_HDI_VERSION = "0.2.3-beta-rc.0"
-NEW_HDI_VERSION = "0.2.4"
+PRE_HDI_VERSION = "0.2.4"
+NEW_HDI_VERSION = "0.2.5"
 
-PRE_CRUD_VERSION = "10d042c36024e2d839008bdb621595a8c09f0b74"
-NEW_CRUD_VERSION = "ccee03e7493cd45d73b2211f4f465cabde28e357"
+PRE_CRUD_VERSION = rev = "ccee03e7493cd45d73b2211f4f465cabde28e357"
+NEW_CRUD_VERSION = rev = "68fc3a029fa910fed74f625678ff92496ebf6742"
 
 GG_REPLACE_LOCATIONS = ':(exclude)*.lock' zomes/*/ *_types/ hc_utils
 
@@ -123,8 +123,8 @@ update-all-version:
 	make update-hdi-version;
 	make update-crud-version;
 update-hdk-version:
-	git grep -l $(PRE_HDK_VERSION) -- $(GG_REPLACE_LOCATIONS) | xargs sed -i 's/$(PRE_HDK_VERSION)/$(NEW_HDK_VERSION)/g'
+	git grep -l '$(PRE_HDK_VERSION)' -- $(GG_REPLACE_LOCATIONS) | xargs sed -i 's/$(PRE_HDK_VERSION)/$(NEW_HDK_VERSION)/g'
 update-hdi-version:
-	git grep -l $(PRE_HDI_VERSION) -- $(GG_REPLACE_LOCATIONS) | xargs sed -i 's/$(PRE_HDI_VERSION)/$(NEW_HDI_VERSION)/g'
+	git grep -l '$(PRE_HDI_VERSION)' -- $(GG_REPLACE_LOCATIONS) | xargs sed -i 's/$(PRE_HDI_VERSION)/$(NEW_HDI_VERSION)/g'
 update-crud-version:
-	git grep -l $(PRE_CRUD_VERSION) -- $(GG_REPLACE_LOCATIONS) | xargs sed -i 's/$(PRE_CRUD_VERSION)/$(NEW_CRUD_VERSION)/g'
+	git grep -l '$(PRE_CRUD_VERSION)' -- $(GG_REPLACE_LOCATIONS) | xargs sed -i 's/$(PRE_CRUD_VERSION)/$(NEW_CRUD_VERSION)/g'

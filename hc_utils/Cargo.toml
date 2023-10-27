@@ -9,4 +9,4 @@ name = "hc_utils"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-hdk = "0.1.4"
+hdk = "0.1.5"
