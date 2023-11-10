@@ -123,8 +123,8 @@ pub fn zome_call_response_as_result(response: ZomeCallResponse) -> ExternResult<
 macro_rules! call_local_cell {
     ( $role:literal, $zome:literal, $fn:literal, $($input:tt)+ ) => {
         {
-            use portal_sdk::hdk::prelude::*;
-            use portal_sdk::hdi_extensions::guest_error;
+            use $crate::hdk::prelude::*;
+            use $crate::hdi_extensions::guest_error;
 
             call(
                 CallTargetCell::OtherRole( $role.into() ),
@@ -147,18 +147,22 @@ macro_rules! call_local_cell {
 macro_rules! call_local_cell_decode {
     ( $role:literal, $zome:literal, $fn:literal, $($input:tt)+ ) => {
         {
-            use portal_sdk::hdk::prelude::*;
+            use $crate::hdk::prelude::{
+                wasm_error,
+            };
 
-            portal_sdk::call_local_cell!( $role, $zome, $fn, $($input)+ ).and_then(
+            $crate::call_local_cell!( $role, $zome, $fn, $($input)+ ).and_then(
                 |extern_io| extern_io.decode().map_err(|err| wasm_error!(WasmErrorInner::from(err)) )
             )
         }
     };
     ( $into_type:ident, $role:literal, $zome:literal, $fn:literal, $($input:tt)+ ) => {
         {
-            use portal_sdk::hdk::prelude::*;
+            use $crate::hdk::prelude::{
+                wasm_error,
+            };
 
-            portal_sdk::call_local_cell!( $role, $zome, $fn, $($input)+ ).and_then(
+            $crate::call_local_cell!( $role, $zome, $fn, $($input)+ ).and_then(
                 |extern_io| extern_io.decode::<$into_type>().map_err(|err| wasm_error!(WasmErrorInner::from(err)) )
             )
         }
@@ -198,14 +202,14 @@ where
 macro_rules! register {
     ( $dna:literal, $zome:literal, $fn_name:literal, $($def:tt)* ) => {
         {
-            use portal_sdk::hdk::prelude::*;
-            use portal_sdk::hc_crud::Entity;
-            use portal_sdk::portal_types::HostEntry;
+            use $crate::hdk::prelude::*;
+            use $crate::hc_crud::Entity;
+            use $crate::portal_types::HostEntry;
 
-            let input = portal_sdk::RegisterInput $($def)*;
-            let payload = portal_sdk::RegisterHostInput {
+            let input = $crate::RegisterInput $($def)*;
+            let payload = $crate::RegisterHostInput {
                 dna: input.dna,
-                granted_functions: portal_sdk::ListedFunctions {
+                granted_functions: $crate::ListedFunctions {
                     Listed: input.granted_functions.into_iter()
                         .map( |(zome, func)| (zome.into(), func.into()) )
                         .collect()
@@ -214,7 +218,7 @@ macro_rules! register {
 
             type Response = Entity<HostEntry>;
 
-            portal_sdk::call_local_cell_decode!(
+            $crate::call_local_cell_decode!(
                 Response,
                 $dna,
                 $zome,
@@ -224,13 +228,13 @@ macro_rules! register {
         }
     };
     ( $dna:literal, $zome:literal, $($def:tt)* ) => {
-        portal_sdk::register!( $dna, $zome, "register_host", $($def)* )
+        $crate::register!( $dna, $zome, "register_host", $($def)* )
     };
     ( $dna:literal, $($def:tt)* ) => {
-        portal_sdk::register!( $dna, "portal_csr", $($def)* )
+        $crate::register!( $dna, "portal_csr", $($def)* )
     };
     ( $($def:tt)* ) => {
-        portal_sdk::register!( "portal", $($def)* )
+        $crate::register!( "portal", $($def)* )
     };
 }
 
@@ -239,9 +243,9 @@ macro_rules! register {
 macro_rules! register_if_exists {
     ( $($def:tt)* ) => {
         {
-            use portal_sdk::hdk::prelude::*;
+            use $crate::hdk::prelude::*;
 
-            let result = portal_sdk::register!( $($def)* );
+            let result = $crate::register!( $($def)* );
 
             match result {
                 Err(err) => match err {
