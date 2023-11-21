@@ -109,18 +109,23 @@ export const PortalCSRZomelet		= new Zomelet({
     //
     async get_available_host_for_zome_function ( input ) {
 	const hosts			= await this.functions.get_hosts_for_zome_function( input );
+
+	if ( hosts.length === 0 )
+	    throw new Error(`There are no hosts for call ${input.dna}::${input.zome}->${input.function}`);
+
 	const host_pings		= hosts.map( async host => {
 	    try {
-		await this.functions.ping( host.author );
+		await this.functions.ping( host.author )
 		return host.author;
-	    } catch (err) {
-		this.log.debug("Ping to '%s' failed with: %s", host.author, err );
-		return null;
+	    } catch (_) {
+		throw new Error(`Unavailable host: ${host.author}`);
 	    }
 	});
-	const available_host		= await Promise.any( host_pings );
-
-	return available_host;
+	try {
+	    return await Promise.any( host_pings );
+	} catch (err) {
+	    throw new Error(`All (${hosts.length}) hosts are unavailable for call ${input.dna}::${input.zome}->${input.function}( ... )`);
+	}
     },
     async remote_call ( input ) {
 	const host			= await this.functions.get_available_host_for_zome_function({
