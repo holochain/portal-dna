@@ -13,9 +13,9 @@ name = "portal_sdk"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-hc_crud_caps = "0.10.2"
-hc_portal_types = "0.9.0"
-# hc_portal_types = { path = "../types" }
-rmpv = { version = "1.0.0", features = ["with-serde"] }
+hc_crud_caps = "0.11"
+# hc_portal_types = "0.9.0"
+hc_portal_types = { path = "../types" }
+rmpv = { version = "1", features = ["with-serde"] }
 serde = "1"
-whi_hdk_extensions = "0.4"
+whi_hdk_extensions = "0.5"

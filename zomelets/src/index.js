@@ -134,7 +134,16 @@ export const PortalCSRZomelet		= new Zomelet({
 	    "function": input.function,
 	});
 
-	this.log.info("Remote calling host (%s) for %s::%s->%s", host, input.dna, input.zome, input.function, input.payload );
+	this.log.info("Remote calling host (%s) for %s::%s->%s(%s)", () => [
+	    host, input.dna, input.zome, input.function,
+	    this.args?.constructor?.name === "Object"
+		? `{ ${Object.keys(input.payload).join(", ")} }`
+		: (
+		    input.payload === null
+			? " null "
+			: ` ${input.payload?.constructor?.name} `
+		)
+	]);
 	return await this.functions.custom_remote_call({
 	    host,
 	    "call": {

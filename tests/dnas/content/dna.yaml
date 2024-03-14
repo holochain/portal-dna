@@ -2,7 +2,7 @@ manifest_version: "1"
 name: content_dna
 integrity:
   origin_time: 2023-01-01T00:00:00.000000Z
-  network-seed: ~
+  network_seed: ~
   properties: ~
   zomes:
     - name: content

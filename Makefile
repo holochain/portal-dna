@@ -67,15 +67,15 @@ $(TARGET_DIR)/%_csr.wasm:	$(CSR_SOURCE_FILES)
 	@touch $@ # Cargo must have a cache somewhere because it doesn't update the file time
 
 PRE_HDIE_VERSION = whi_hdi_extensions = "0.4"
-NEW_HDIE_VERSION = whi_hdi_extensions = "0.4"
+NEW_HDIE_VERSION = whi_hdi_extensions = "0.5"
 
 PRE_HDKE_VERSION = whi_hdk_extensions = "0.4"
-NEW_HDKE_VERSION = whi_hdk_extensions = "0.4"
+NEW_HDKE_VERSION = whi_hdk_extensions = "0.5"
 
-PRE_CRUD_VERSION = hc_crud_caps = "0.9.0"
-NEW_CRUD_VERSION = hc_crud_caps = "0.10.2"
+PRE_CRUD_VERSION = hc_crud_caps = "0.10.2"
+NEW_CRUD_VERSION = hc_crud_caps = "0.11"
 
-GG_REPLACE_LOCATIONS = ':(exclude)*.lock' zomes/*/ *_types/ hc_utils
+GG_REPLACE_LOCATIONS = ':(exclude)*.lock' zomes/*/ types sdk tests/zomes
 
 update-all-version:
 	rm -r target;
@@ -83,11 +83,11 @@ update-all-version:
 	make update-hdi-version;
 	make update-crud-version;
 update-hdk-version:
-	git grep -l $(PRE_HDK_VERSION) -- $(GG_REPLACE_LOCATIONS) | xargs sed -i 's/$(PRE_HDK_VERSION)/$(NEW_HDK_VERSION)/g'
+	git grep -l '$(PRE_HDKE_VERSION)' -- $(GG_REPLACE_LOCATIONS) | xargs sed -i 's/$(PRE_HDKE_VERSION)/$(NEW_HDKE_VERSION)/g'
 update-hdi-version:
-	git grep -l $(PRE_HDI_VERSION) -- $(GG_REPLACE_LOCATIONS) | xargs sed -i 's/$(PRE_HDI_VERSION)/$(NEW_HDI_VERSION)/g'
+	git grep -l '$(PRE_HDIE_VERSION)' -- $(GG_REPLACE_LOCATIONS) | xargs sed -i 's/$(PRE_HDIE_VERSION)/$(NEW_HDIE_VERSION)/g'
 update-crud-version:
-	git grep -l $(PRE_CRUD_VERSION) -- $(GG_REPLACE_LOCATIONS) | xargs sed -i 's/$(PRE_CRUD_VERSION)/$(NEW_CRUD_VERSION)/g'
+	git grep -l '$(PRE_CRUD_VERSION)' -- $(GG_REPLACE_LOCATIONS) | xargs sed -i 's/$(PRE_CRUD_VERSION)/$(NEW_CRUD_VERSION)/g'
 
 npm-reinstall-local:
 	cd tests; npm uninstall $(NPM_PACKAGE); npm i --save $(LOCAL_PATH)
@@ -147,8 +147,16 @@ CONTENT_DNA			= tests/content.dna
 
 tests/%.dna:			FORCE
 	cd tests; make $*.dna
-test:				test-unit test-integration
-test-debug:			test-unit test-integration-debug
+test:
+	make -s test-unit
+	make -s test-integration
+	make -s test-portal
+	make -s test-no-portal
+test-debug:
+	make -s test-unit-debug
+	make -s test-integration-debug
+	make -s test-portal-debug
+	make -s test-no-portal-debug
 
 # Unit tests
 test-crate:
