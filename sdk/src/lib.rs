@@ -17,7 +17,6 @@ use hdi_extensions::{
     guest_error,
 };
 use hdk::prelude::*;
-use hdk::hash_path::path::{ Component };
 use holo_hash::DnaHash;
 
 

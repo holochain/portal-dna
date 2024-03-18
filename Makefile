@@ -66,14 +66,14 @@ $(TARGET_DIR)/%_csr.wasm:	$(CSR_SOURCE_FILES)
 	    --package $*_csr
 	@touch $@ # Cargo must have a cache somewhere because it doesn't update the file time
 
-PRE_HDIE_VERSION = whi_hdi_extensions = "0.4"
-NEW_HDIE_VERSION = whi_hdi_extensions = "0.5"
+PRE_HDIE_VERSION = whi_hdi_extensions = "0.5"
+NEW_HDIE_VERSION = whi_hdi_extensions = "0.6"
 
-PRE_HDKE_VERSION = whi_hdk_extensions = "0.4"
-NEW_HDKE_VERSION = whi_hdk_extensions = "0.5"
+PRE_HDKE_VERSION = whi_hdk_extensions = "0.5"
+NEW_HDKE_VERSION = whi_hdk_extensions = "0.6"
 
-PRE_CRUD_VERSION = hc_crud_caps = "0.10.2"
-NEW_CRUD_VERSION = hc_crud_caps = "0.11"
+PRE_CRUD_VERSION = hc_crud_caps = "0.11"
+NEW_CRUD_VERSION = hc_crud_caps = "0.12"
 
 GG_REPLACE_LOCATIONS = ':(exclude)*.lock' zomes/*/ types sdk tests/zomes
 
@@ -125,16 +125,16 @@ prepare-release:		$(PORTAL_DNA)
 #
 .cargo/credentials:
 	cp ~/$@ $@
-preview-types-crate:		test-debug
+preview-types-crate:		test
 	cd types; cargo publish --dry-run --allow-dirty
 	touch types/src/lib.rs # Force rebuild to fix 'missing debug macro' issue after dry run
-publish-types-crate:		test-debug .cargo/credentials
+publish-types-crate:		test .cargo/credentials
 	cd types; cargo publish
 	touch types/src/lib.rs # Force rebuild to fix 'missing debug macro' issue after dry run
-preview-sdk-crate:		test-debug
+preview-sdk-crate:		test
 	cd sdk; cargo publish --dry-run --allow-dirty
 	touch sdk/src/lib.rs # Force rebuild to fix 'missing debug macro' issue after dry run
-publish-sdk-crate:		test-debug .cargo/credentials
+publish-sdk-crate:		test .cargo/credentials
 	cd sdk; cargo publish
 	touch sdk/src/lib.rs # Force rebuild to fix 'missing debug macro' issue after dry run
 
@@ -143,20 +143,15 @@ publish-sdk-crate:		test-debug .cargo/credentials
 #
 # Testing
 #
-CONTENT_DNA			= tests/content.dna
+DEBUG_LEVEL	       ?= warn
+TEST_ENV_VARS		= LOG_LEVEL=$(DEBUG_LEVEL)
+MOCHA_OPTS		= -n enable-source-maps
 
 tests/%.dna:			FORCE
 	cd tests; make $*.dna
 test:
-	make -s test-unit
-	make -s test-integration
-	make -s test-portal
-	make -s test-no-portal
-test-debug:
 	make -s test-unit-debug
-	make -s test-integration-debug
-	make -s test-portal-debug
-	make -s test-no-portal-debug
+	make -s test-integration
 
 # Unit tests
 test-crate:
@@ -172,21 +167,16 @@ test-unit-debug:
 test-setup:			tests/node_modules zomelets/node_modules
 
 test-integration:
-	make test-portal
-	make test-no-portal
-test-integration-debug:
-	make test-portal-debug
-	make test-no-portal-debug
+	make -s test-portal
+	make -s test-no-portal
+
+CONTENT_DNA			= tests/content.dna
 
 test-portal:			test-setup $(PORTAL_DNA) $(CONTENT_DNA)
-	cd tests; RUST_LOG=none LOG_LEVEL=fatal npx mocha integration/test_portal.js
-test-portal-debug:		test-setup $(PORTAL_DNA) $(CONTENT_DNA)
-	cd tests; RUST_LOG=info LOG_LEVEL=trace npx mocha integration/test_portal.js
+	cd tests; $(TEST_ENV_VARS) npx mocha $(MOCHA_OPTS) integration/test_portal.js
 
 test-no-portal:			test-setup $(CONTENT_DNA)
-	cd tests; RUST_LOG=none LOG_LEVEL=fatal npx mocha integration/test_no_portal.js
-test-no-portal-debug:		test-setup $(CONTENT_DNA)
-	cd tests; RUST_LOG=info LOG_LEVEL=trace npx mocha integration/test_no_portal.js
+	cd tests; $(TEST_ENV_VARS) npx mocha $(MOCHA_OPTS) integration/test_no_portal.js
 
 
 
@@ -236,9 +226,9 @@ prepare-zomelets-package:
 	cd zomelets; npx webpack
 	cd zomelets; MODE=production npx webpack
 	cd zomelets; gzip -kf dist/*.js
-preview-zomelets-package:	clean-files test-debug prepare-zomelets-package
+preview-zomelets-package:	clean-files test prepare-zomelets-package
 	cd zomelets; npm pack --dry-run .
-create-zomelets-package:	clean-files test-debug prepare-zomelets-package
+create-zomelets-package:	clean-files test prepare-zomelets-package
 	cd zomelets; npm pack .
-publish-zomelets-package:	clean-files test-debug prepare-zomelets-package
+publish-zomelets-package:	clean-files test prepare-zomelets-package
 	cd zomelets; npm publish --access public .

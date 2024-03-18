@@ -31,8 +31,8 @@ import {
 const __dirname				= path.dirname( new URL(import.meta.url).pathname );
 const PORTAL_DNA_PATH			= path.join( __dirname, "../../portal.dna" );
 const TEST_DNA_PATH			= path.join( __dirname, "../content.dna" );
-const APP_PORT				= 23_567;
 
+let app_port;
 let client;
 let alice_client, alice_csr;
 let bobby_client, bobby_csr;
@@ -42,19 +42,18 @@ let carol_client, carol_csr;
 describe("Portal", () => {
     const holochain			= new Holochain({
 	"timeout": 60_000,
-	"default_stdout_loggers": process.env.LOG_LEVEL === "trace",
+	"default_stdout_loggers": log.level_rank > 3,
     });
 
     before(async function () {
 	this.timeout( 60_000 );
 
-	const actors			= await holochain.backdrop({
+	await holochain.backdrop({
 	    "test": {
 		"portal":	PORTAL_DNA_PATH,
 		"content":	TEST_DNA_PATH,
 	    },
 	}, {
-	    "app_port": APP_PORT,
 	    "actors": [
 		"alice",
 		"bobby",
@@ -62,7 +61,9 @@ describe("Portal", () => {
 	    ],
 	});
 
-	client				= new AppInterfaceClient( APP_PORT, {
+	app_port			= await holochain.appPorts()[0];
+
+	client				= new AppInterfaceClient( app_port, {
 	    "logging": process.env.LOG_LEVEL || "fatal",
 	});
 

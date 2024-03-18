@@ -20,8 +20,8 @@ import {
 
 const __dirname				= path.dirname( new URL(import.meta.url).pathname );
 const TEST_DNA_PATH			= path.join( __dirname, "../content.dna" );
-const APP_PORT				= 23_567;
 
+let app_port;
 let client;
 let alice_client, alice_csr;
 
@@ -35,18 +35,15 @@ describe("No Portal", () => {
     before(async function () {
 	this.timeout( 60_000 );
 
-	const actors			= await holochain.backdrop({
+	await holochain.backdrop({
 	    "test": {
 		"content":	TEST_DNA_PATH,
 	    },
-	}, {
-	    "app_port": APP_PORT,
-	    "actors": [
-		"alice",
-	    ],
 	});
 
-	client				= new AppInterfaceClient( APP_PORT, {
+	app_port			= await holochain.appPorts()[0];
+
+	client				= new AppInterfaceClient( app_port, {
 	    "logging": process.env.LOG_LEVEL || "fatal",
 	});
 

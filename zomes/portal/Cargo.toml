@@ -9,6 +9,6 @@ name = "portal"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-hc_crud_caps = "0.11"
+hc_crud_caps = "0.12"
 hc_portal_types = {path = "../../types"}
 serde = "1"

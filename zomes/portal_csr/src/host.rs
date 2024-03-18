@@ -84,7 +84,12 @@ pub fn list_links (input: GetInput) -> ExternResult<Vec<ActionHash>> {
     let (_, pathhash ) = portal_sdk::path( ANCHOR_HOSTS, vec![
 	&input.dna.to_string(),
     ]);
-    let links = get_links( pathhash, LinkTypes::Host, None )?;
+    let links = get_links(
+        GetLinksInputBuilder::try_new(
+            pathhash,
+            LinkTypes::Host
+        )?.build()
+    )?;
 
     Ok(
 	links
