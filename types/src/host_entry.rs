@@ -27,15 +27,15 @@ pub struct HostEntry {
 
 impl<'a> CommonFields<'a> for HostEntry {
     fn author(&'a self) -> &'a AgentPubKey {
-	&self.author
+        &self.author
     }
     fn published_at(&'a self) -> &'a u64 {
-	&self.published_at
+        &self.published_at
     }
     fn last_updated(&'a self) -> &'a u64 {
-	&self.last_updated
+        &self.last_updated
     }
     fn metadata(&'a self) -> &'a Metadata {
-	&self.metadata
+        &self.metadata
     }
 }

@@ -81,13 +81,13 @@ where
     let mut components : Vec<Component> = vec![];
 
     for seg in base.split(".") {
-	let component = Component::from( format!("{}", seg ).as_bytes().to_vec() );
-	components.push( component );
+        let component = Component::from( format!("{}", seg ).as_bytes().to_vec() );
+        components.push( component );
     }
 
     for seg in segments {
-	let component = Component::from( format!("{}", seg ).as_bytes().to_vec() );
-	components.push( component );
+        let component = Component::from( format!("{}", seg ).as_bytes().to_vec() );
+        components.push( component );
     }
 
     let path = Path::from( components );
@@ -104,14 +104,14 @@ where
 /// Translate [`ZomeCallResponse`] into a [`Result`]
 pub fn zome_call_response_as_result(response: ZomeCallResponse) -> ExternResult<ExternIO> {
     Ok( match response {
-	ZomeCallResponse::Ok(bytes)
-	    => Ok(bytes),
-	ZomeCallResponse::Unauthorized(zome_call_auth, cell_id, zome, func, agent)
-	    => Err(guest_error!(format!("UnauthorizedError( {}, {}, {}, {}, {} )", zome_call_auth, cell_id, zome, func, agent ))),
-	ZomeCallResponse::NetworkError(message)
-	    => Err(guest_error!(format!("NetworkError( {} )", message ))),
-	ZomeCallResponse::CountersigningSession(message)
-	    => Err(guest_error!(format!("CountersigningSessionError( {} )", message ))),
+        ZomeCallResponse::Ok(bytes)
+            => Ok(bytes),
+        ZomeCallResponse::Unauthorized(zome_call_auth, cell_id, zome, func, agent)
+            => Err(guest_error!(format!("UnauthorizedError( {}, {}, {}, {}, {} )", zome_call_auth, cell_id, zome, func, agent ))),
+        ZomeCallResponse::NetworkError(message)
+            => Err(guest_error!(format!("NetworkError( {} )", message ))),
+        ZomeCallResponse::CountersigningSession(message)
+            => Err(guest_error!(format!("CountersigningSessionError( {} )", message ))),
     }? )
 }
 

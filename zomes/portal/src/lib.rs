@@ -49,9 +49,9 @@ impl TryFrom<String> for LinkTypes {
     fn try_from(name: String) -> Result<Self, Self::Error> {
         Ok(
             match name.as_str() {
-	        "Agent" => LinkTypes::Agent,
-	        "Host" => LinkTypes::Host,
-	        "Anchor" => LinkTypes::Anchor,
+                "Agent" => LinkTypes::Agent,
+                "Host" => LinkTypes::Host,
+                "Anchor" => LinkTypes::Anchor,
                 _ => return Err(guest_error!(format!("Unknown LinkTypes variant: {}", name ))),
             }
         )
