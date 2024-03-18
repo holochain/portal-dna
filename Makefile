@@ -125,16 +125,20 @@ prepare-release:		$(PORTAL_DNA)
 #
 .cargo/credentials:
 	cp ~/$@ $@
-preview-types-crate:		test
+preview-types-crate:
+	DEBUG_LEVEL=trace make -s test
 	cd types; cargo publish --dry-run --allow-dirty
 	touch types/src/lib.rs # Force rebuild to fix 'missing debug macro' issue after dry run
-publish-types-crate:		test .cargo/credentials
+publish-types-crate:		.cargo/credentials
+	DEBUG_LEVEL=trace make -s test
 	cd types; cargo publish
 	touch types/src/lib.rs # Force rebuild to fix 'missing debug macro' issue after dry run
-preview-sdk-crate:		test
+preview-sdk-crate:
+	DEBUG_LEVEL=trace make -s test
 	cd sdk; cargo publish --dry-run --allow-dirty
 	touch sdk/src/lib.rs # Force rebuild to fix 'missing debug macro' issue after dry run
-publish-sdk-crate:		test .cargo/credentials
+publish-sdk-crate:		.cargo/credentials
+	DEBUG_LEVEL=trace make -s test
 	cd sdk; cargo publish
 	touch sdk/src/lib.rs # Force rebuild to fix 'missing debug macro' issue after dry run
 
@@ -226,9 +230,12 @@ prepare-zomelets-package:
 	cd zomelets; npx webpack
 	cd zomelets; MODE=production npx webpack
 	cd zomelets; gzip -kf dist/*.js
-preview-zomelets-package:	clean-files test prepare-zomelets-package
+preview-zomelets-package:	clean-files prepare-zomelets-package
+	DEBUG_LEVEL=trace make -s test
 	cd zomelets; npm pack --dry-run .
-create-zomelets-package:	clean-files test prepare-zomelets-package
+create-zomelets-package:	clean-files prepare-zomelets-package
+	DEBUG_LEVEL=trace make -s test
 	cd zomelets; npm pack .
-publish-zomelets-package:	clean-files test prepare-zomelets-package
+publish-zomelets-package:	clean-files prepare-zomelets-package
+	DEBUG_LEVEL=trace make -s test
 	cd zomelets; npm publish --access public .
