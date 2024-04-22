@@ -816,10 +816,10 @@ dependencies = [
 
 [[package]]
 name = "hc_portal_sdk"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "hc_crud_caps",
- "hc_portal_types 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "hc_portal_types",
  "rmpv",
  "serde",
  "whi_hdk_extensions",
@@ -827,22 +827,11 @@ dependencies = [
 
 [[package]]
 name = "hc_portal_types"
-version = "0.11.0"
+version = "0.12.0"
 dependencies = [
  "rmpv",
  "serde",
- "whi_hdi_extensions 0.7.0",
-]
-
-[[package]]
-name = "hc_portal_types"
-version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b730433e0fec11da3934d7954bf3d8dabcefdff7ceefc7a12859abc881f3ec4"
-dependencies = [
- "rmpv",
- "serde",
- "whi_hdi_extensions 0.6.0",
+ "whi_hdi_extensions",
 ]
 
 [[package]]
@@ -1427,7 +1416,7 @@ name = "portal"
 version = "0.0.0"
 dependencies = [
  "hc_crud_caps",
- "hc_portal_types 0.11.0",
+ "hc_portal_types",
  "serde",
 ]
 
@@ -2442,17 +2431,6 @@ dependencies = [
 
 [[package]]
 name = "whi_hdi_extensions"
-version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f95f61ecd91f91d10a9039af94354d9671e5ff40c87ba9f2b071a410d0b5d55"
-dependencies = [
- "hdi",
- "holo_hash",
- "serde",
-]
-
-[[package]]
-name = "whi_hdi_extensions"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "05e8a2b5cbb4b196f3e89dedd17b39a7d0fad72baf43754c58a42cf104fceb27"
@@ -2471,7 +2449,7 @@ dependencies = [
  "hdk",
  "serde",
  "thiserror",
- "whi_hdi_extensions 0.7.0",
+ "whi_hdi_extensions",
 ]
 
 [[package]]
