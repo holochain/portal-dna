@@ -66,22 +66,22 @@ $(TARGET_DIR)/%_csr.wasm:	$(CSR_SOURCE_FILES)
 	    --package $*_csr
 	@touch $@ # Cargo must have a cache somewhere because it doesn't update the file time
 
-PRE_HDIE_VERSION = whi_hdi_extensions = "0.5"
-NEW_HDIE_VERSION = whi_hdi_extensions = "0.6"
+PRE_HDIE_VERSION = whi_hdi_extensions = "0.6"
+NEW_HDIE_VERSION = whi_hdi_extensions = "0.7"
 
-PRE_HDKE_VERSION = whi_hdk_extensions = "0.5"
-NEW_HDKE_VERSION = whi_hdk_extensions = "0.6"
+PRE_HDKE_VERSION = whi_hdk_extensions = "0.6"
+NEW_HDKE_VERSION = whi_hdk_extensions = "0.7"
 
-PRE_CRUD_VERSION = hc_crud_caps = "0.11"
-NEW_CRUD_VERSION = hc_crud_caps = "0.12"
+PRE_CRUD_VERSION = hc_crud_caps = "0.12"
+NEW_CRUD_VERSION = hc_crud_caps = "0.13"
 
 GG_REPLACE_LOCATIONS = ':(exclude)*.lock' zomes/*/ types sdk tests/zomes
 
 update-all-version:
 	rm -r target;
-	make update-hdk-version;
-	make update-hdi-version;
-	make update-crud-version;
+	make -s update-hdk-version
+	make -s update-hdi-version
+	make -s update-crud-version
 update-hdk-version:
 	git grep -l '$(PRE_HDKE_VERSION)' -- $(GG_REPLACE_LOCATIONS) | xargs sed -i 's/$(PRE_HDKE_VERSION)/$(NEW_HDKE_VERSION)/g'
 update-hdi-version:
@@ -93,10 +93,12 @@ npm-reinstall-local:
 	cd tests; npm uninstall $(NPM_PACKAGE); npm i --save $(LOCAL_PATH)
 npm-reinstall-public:
 	cd tests; npm uninstall $(NPM_PACKAGE); npm i --save $(NPM_PACKAGE)
+
 npm-use-app-interface-client-public:
 npm-use-app-interface-client-local:
 npm-use-app-interface-client-%:
 	NPM_PACKAGE=@spartan-hc/app-interface-client LOCAL_PATH=../../app-interface-client-js make npm-reinstall-$*
+
 npm-use-backdrop-public:
 npm-use-backdrop-local:
 npm-use-backdrop-%:

@@ -48,20 +48,21 @@ describe("Portal", () => {
     before(async function () {
 	this.timeout( 60_000 );
 
-	await holochain.backdrop({
-	    "test": {
-		"portal":	PORTAL_DNA_PATH,
-		"content":	TEST_DNA_PATH,
+	await holochain.install([
+	    "alice",
+	    "bobby",
+	    "carol",
+	], [
+	    {
+		"app_name": "test",
+		"bundle": {
+		    "portal":	PORTAL_DNA_PATH,
+		    "content":	TEST_DNA_PATH,
+		},
 	    },
-	}, {
-	    "actors": [
-		"alice",
-		"bobby",
-		"carol",
-	    ],
-	});
+	]);
 
-	app_port			= await holochain.appPorts()[0];
+	app_port			= await holochain.ensureAppPort();
 
 	client				= new AppInterfaceClient( app_port, {
 	    "logging": process.env.LOG_LEVEL || "fatal",

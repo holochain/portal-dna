@@ -9,7 +9,7 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 serde = "1"
-whi_hdi_extensions = "0.6"
+whi_hdi_extensions = "0.7"
 
 # temporary fix for compile error in
 getrandom = { version = "=0.2.7", features = ["custom"] }

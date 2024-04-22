@@ -9,11 +9,11 @@
   "license": "ISC",
   "dependencies": {
     "@holochain/portal-zomelets": "file:../zomelets",
-    "@spartan-hc/app-interface-client": "^0.4.1",
+    "@spartan-hc/app-interface-client": "^0.5.0",
     "@spartan-hc/holo-hash": "^0.6.1",
-    "@spartan-hc/holochain-backdrop": "^3.0.0",
+    "@spartan-hc/holochain-backdrop": "^4.1.0",
     "@whi/json": "^0.1.7",
-    "@whi/weblogger": "^0.2.1",
+    "@whi/weblogger": "^0.4.0",
     "chai": "^4.3.4",
     "mocha": "^10.1.0",
     "why-is-node-running": "^2.2.0"
