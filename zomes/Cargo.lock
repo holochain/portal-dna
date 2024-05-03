@@ -804,7 +804,7 @@ dependencies = [
 
 [[package]]
 name = "hc_portal_sdk"
-version = "0.4.0"
+version = "0.5.0"
 dependencies = [
  "hc_crud_caps",
  "hc_portal_types",
@@ -815,7 +815,7 @@ dependencies = [
 
 [[package]]
 name = "hc_portal_types"
-version = "0.12.0"
+version = "0.13.0"
 dependencies = [
  "rmpv",
  "serde",

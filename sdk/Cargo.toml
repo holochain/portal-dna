@@ -1,6 +1,6 @@
 [package]
 name = "hc_portal_sdk"
-version = "0.4.0"
+version = "0.5.0"
 authors = ["Matthew Brisebois <matthew.brisebois@holo.host>"]
 edition = "2018"
 license = "CAL-1.0"
@@ -14,7 +14,7 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 hc_crud_caps = "0.14"
-hc_portal_types = { version = "0.12", path = "../types" }
+hc_portal_types = { version = "0.13", path = "../types" }
 rmpv = { version = "1", features = ["with-serde"] }
 serde = "1"
 whi_hdk_extensions = "0.8"
