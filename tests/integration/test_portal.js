@@ -48,7 +48,7 @@ describe("Portal", () => {
     before(async function () {
 	this.timeout( 60_000 );
 
-	await holochain.install([
+	const installations		= await holochain.install([
 	    "alice",
 	    "bobby",
 	    "carol",
@@ -68,9 +68,14 @@ describe("Portal", () => {
 	    "logging": process.env.LOG_LEVEL || "fatal",
 	});
 
-	alice_client			= await client.app( "test-alice" );
-	bobby_client			= await client.app( "test-bobby" );
-	carol_client			= await client.app( "test-carol" );
+	const alice_token		= installations.alice.test.auth.token;
+	alice_client			= await client.app( alice_token );
+
+	const bobby_token		= installations.bobby.test.auth.token;
+	bobby_client			= await client.app( bobby_token );
+
+	const carol_token		= installations.carol.test.auth.token;
+	carol_client			= await client.app( carol_token );
 
 	alice_csr			= alice_client.createZomeInterface( "portal", "portal_csr", PortalCSRZomelet ).functions;
 	bobby_csr			= bobby_client.createZomeInterface( "portal", "portal_csr", PortalCSRZomelet ).functions;

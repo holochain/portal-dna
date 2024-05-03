@@ -66,14 +66,14 @@ $(TARGET_DIR)/%_csr.wasm:	$(CSR_SOURCE_FILES)
 	    --package $*_csr
 	@touch $@ # Cargo must have a cache somewhere because it doesn't update the file time
 
-PRE_HDIE_VERSION = whi_hdi_extensions = "0.6"
-NEW_HDIE_VERSION = whi_hdi_extensions = "0.7"
+PRE_HDIE_VERSION = whi_hdi_extensions = "0.7"
+NEW_HDIE_VERSION = whi_hdi_extensions = "0.8"
 
-PRE_HDKE_VERSION = whi_hdk_extensions = "0.6"
-NEW_HDKE_VERSION = whi_hdk_extensions = "0.7"
+PRE_HDKE_VERSION = whi_hdk_extensions = "0.7"
+NEW_HDKE_VERSION = whi_hdk_extensions = "0.8"
 
-PRE_CRUD_VERSION = hc_crud_caps = "0.12"
-NEW_CRUD_VERSION = hc_crud_caps = "0.13"
+PRE_CRUD_VERSION = hc_crud_caps = "0.13"
+NEW_CRUD_VERSION = hc_crud_caps = "0.14"
 
 GG_REPLACE_LOCATIONS = ':(exclude)*.lock' zomes/*/ types sdk tests/zomes
 

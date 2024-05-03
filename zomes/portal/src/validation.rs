@@ -33,7 +33,15 @@ where
     ET: EntryTypesHelper,
     WasmError: From<<ET as EntryTypesHelper>::Error>,
 {
-    Ok(match register_update.original_action.entry_type() {
+    let update = register_update.update.hashed.content.clone();
+    let original_action = must_get_action( update.original_action_address )?;
+    let entry_type = original_action.action().entry_type()
+        .ok_or(guest_error!(format!(
+            "Original action ({}) does not have an entry",
+            original_action.action_address(),
+        )))?;
+
+    Ok(match entry_type {
         EntryType::App(AppEntryDef {
             zome_index,
             entry_index,
@@ -56,19 +64,25 @@ where
     ET: EntryTypesHelper,
     WasmError: From<<ET as EntryTypesHelper>::Error>,
 {
-    Ok(match register_delete.original_action.entry_type() {
+    let delete = register_delete.delete.hashed.content.clone();
+    let original_action = must_get_action( delete.deletes_address )?;
+    let entry_type = original_action.action().entry_type()
+        .ok_or(guest_error!(format!(
+            "Original action ({}) does not have an entry",
+            original_action.action_address(),
+        )))?;
+    let original_entry = must_get_entry( delete.deletes_entry_address )?;
+
+    Ok(match entry_type {
         EntryType::App(AppEntryDef {
             zome_index,
             entry_index,
-            visibility,
+            visibility: _,
         }) => {
-            Some(match &register_delete.original_entry {
-                None => Err( guest_error!(format!("Original entry is None meaning visibility is Private: {:?}", visibility )) )?,
-                Some(entry) => {
-                    ET::deserialize_from_type( *zome_index, *entry_index, &entry )?
-                        .ok_or( guest_error!("No entry type matched for:".to_string()) )?
-                },
-            })
+            Some(
+                ET::deserialize_from_type( *zome_index, *entry_index, &original_entry )?
+                    .ok_or( guest_error!("No entry type matched for:".to_string()) )?
+            )
         },
         _ => None,
     })
@@ -99,7 +113,9 @@ fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                 debug!("Op::{} => Running validation for: {:?}", op.action_type(), entry_type );
                 return match entry_type {
                     EntryTypes::Host(content) => {
-                        let original_entry : HostEntry = register_update.original_entry.unwrap().try_into()?;
+                        let original_entry : HostEntry = must_get_entry(
+                            register_update.update.hashed.content.original_entry_address
+                        )?.try_into()?;
                         validate_host_update( &op, content, original_entry )
                     },
                 };

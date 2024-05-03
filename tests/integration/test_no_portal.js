@@ -35,7 +35,7 @@ describe("No Portal", () => {
     before(async function () {
 	this.timeout( 60_000 );
 
-	await holochain.install([
+	const installations		= await holochain.install([
 	    "alice",
 	], [
 	    {
@@ -52,7 +52,8 @@ describe("No Portal", () => {
 	    "logging": process.env.LOG_LEVEL || "fatal",
 	});
 
-	alice_client			= await client.app( "test-alice" );
+	const alice_token		= installations.alice.test.auth.token;
+	alice_client			= await client.app( alice_token );
     });
 
     it("should init and fail silently", async function () {
