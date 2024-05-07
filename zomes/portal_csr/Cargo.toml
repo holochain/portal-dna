@@ -9,7 +9,7 @@ name = "portal_csr"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-hc_portal_sdk = { version = "0.5", path = "../../sdk" }
+hc_portal_sdk = { version = "0.6", path = "../../sdk" }
 portal = { path = "../portal" }
 rand = "0.8.5"
 serde = "1"
