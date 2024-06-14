@@ -11,7 +11,7 @@
     "@holochain/portal-zomelets": "file:../zomelets",
     "@spartan-hc/app-interface-client": "^0.6.1",
     "@spartan-hc/holo-hash": "^0.7.0",
-    "@spartan-hc/holochain-backdrop": "^4.3.0",
+    "@spartan-hc/holochain-backdrop": "^4.4.1",
     "@whi/json": "^0.1.7",
     "@whi/weblogger": "^0.4.0",
     "chai": "^4.3.4",
