@@ -11,7 +11,7 @@ PORTAL_WASM		= zomes/portal.wasm
 PORTAL_CSR_WASM		= zomes/portal_csr.wasm
 
 TARGET			= release
-TARGET_DIR		= target/wasm32-unknown-unknown/release
+TARGET_DIR		= zomes/target/wasm32-unknown-unknown/release
 COMMON_SOURCE_FILES	= Makefile zomes/Cargo.toml
 INT_SOURCE_FILES	= $(COMMON_SOURCE_FILES) \
 				zomes/%/Cargo.toml zomes/%/src/*.rs \
@@ -66,19 +66,22 @@ $(TARGET_DIR)/%_csr.wasm:	$(CSR_SOURCE_FILES)
 	    --package $*_csr
 	@touch $@ # Cargo must have a cache somewhere because it doesn't update the file time
 
-PRE_HDIE_VERSION = whi_hdi_extensions = "0.8"
-NEW_HDIE_VERSION = whi_hdi_extensions = "0.9"
+PRE_EDITION = edition = "2018"
+NEW_EDITION = edition = "2021"
 
-PRE_HDKE_VERSION = whi_hdk_extensions = "0.8"
-NEW_HDKE_VERSION = whi_hdk_extensions = "0.9"
+PRE_HDIE_VERSION = whi_hdi_extensions = "0.9"
+NEW_HDIE_VERSION = whi_hdi_extensions = "0.10"
 
-PRE_CRUD_VERSION = hc_crud_caps = "0.14"
-NEW_CRUD_VERSION = hc_crud_caps = "0.15"
+PRE_HDKE_VERSION = whi_hdk_extensions = "0.9"
+NEW_HDKE_VERSION = whi_hdk_extensions = "0.10"
+
+PRE_CRUD_VERSION = hc_crud_caps = "0.15"
+NEW_CRUD_VERSION = hc_crud_caps = "0.16"
 
 GG_REPLACE_LOCATIONS = ':(exclude)*.lock' zomes/*/ types sdk tests/zomes
 
 update-all-version:
-	rm -r target;
+	rm -fr target;
 	make -s update-hdk-version
 	make -s update-hdi-version
 	make -s update-crud-version
@@ -88,6 +91,8 @@ update-hdi-version:
 	git grep -l '$(PRE_HDIE_VERSION)' -- $(GG_REPLACE_LOCATIONS) | xargs sed -i 's/$(PRE_HDIE_VERSION)/$(NEW_HDIE_VERSION)/g'
 update-crud-version:
 	git grep -l '$(PRE_CRUD_VERSION)' -- $(GG_REPLACE_LOCATIONS) | xargs sed -i 's/$(PRE_CRUD_VERSION)/$(NEW_CRUD_VERSION)/g'
+update-edition:
+	git grep -l '$(PRE_EDITION)' -- $(GG_REPLACE_LOCATIONS) | xargs sed -i 's/$(PRE_EDITION)/$(NEW_EDITION)/g'
 
 npm-reinstall-local:
 	cd tests; npm uninstall $(NPM_PACKAGE); npm i --save $(LOCAL_PATH)

@@ -3,3 +3,4 @@ members = [
   "portal",
   "portal_csr",
 ]
+resolver = "2"

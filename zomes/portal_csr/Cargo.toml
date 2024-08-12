@@ -2,7 +2,7 @@
 name = "portal_csr"
 version = "0.0.0"
 authors = ["Matthew Brisebois <matthew.brisebois@holo.host>"]
-edition = "2018"
+edition = "2021"
 
 [lib]
 name = "portal_csr"

@@ -3,3 +3,4 @@ members = [
   "content",
   "content_csr",
 ]
+resolver = "2"
