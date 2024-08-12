@@ -131,6 +131,7 @@ prepare-release:		$(PORTAL_DNA)
 # Rust Packages
 #
 .cargo/credentials:
+	mkdir -p .cargo
 	cp ~/$@ $@
 preview-types-crate:
 	DEBUG_LEVEL=trace make -s test
