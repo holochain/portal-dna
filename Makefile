@@ -69,14 +69,14 @@ $(TARGET_DIR)/%_csr.wasm:	$(CSR_SOURCE_FILES)
 PRE_EDITION = edition = "2018"
 NEW_EDITION = edition = "2021"
 
-PRE_HDIE_VERSION = whi_hdi_extensions = "0.9"
-NEW_HDIE_VERSION = whi_hdi_extensions = "0.10"
+PRE_HDIE_VERSION = whi_hdi_extensions = "0.10"
+NEW_HDIE_VERSION = whi_hdi_extensions = "0.12"
 
-PRE_HDKE_VERSION = whi_hdk_extensions = "0.9"
-NEW_HDKE_VERSION = whi_hdk_extensions = "0.10"
+PRE_HDKE_VERSION = whi_hdk_extensions = "0.10"
+NEW_HDKE_VERSION = whi_hdk_extensions = "0.12"
 
-PRE_CRUD_VERSION = hc_crud_caps = "0.15"
-NEW_CRUD_VERSION = hc_crud_caps = "0.16"
+PRE_CRUD_VERSION = hc_crud_caps = "0.16"
+NEW_CRUD_VERSION = hc_crud_caps = "0.17"
 
 GG_REPLACE_LOCATIONS = ':(exclude)*.lock' zomes/*/ types sdk tests/zomes
 

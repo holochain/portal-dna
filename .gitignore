@@ -1,9 +1,14 @@
 /.cargo
-target
+/.rustup
+/target
+/types/target
+/sdk/target
+/zomes/target
 /zomes/*.wasm
 /portal.dna
 /zomelets/dist
 /zomelets/node_modules
+/tests/target
 /tests/node_modules
 /tests/*.dna
 /tests/zomes/*.wasm
