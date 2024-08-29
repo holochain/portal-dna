@@ -10,5 +10,5 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 hc_crud_caps = "0.17"
-hc_portal_types = { version = "0.15", path = "../../types" }
+hc_portal_types = { version = "0.16", path = "../../types" }
 serde = "1"
