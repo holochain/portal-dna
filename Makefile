@@ -92,7 +92,6 @@ update-all-version:
 	make -s update-hdi-version
 	make -s update-crud-version
 
-
 update-hdk-version:
 	git grep -l '$(PRE_HDKE_VERSION)' -- $(GG_REPLACE_LOCATIONS) | xargs $(SED_INPLACE) 's/$(PRE_HDKE_VERSION)/$(NEW_HDKE_VERSION)/g'
 update-hdi-version:
@@ -120,7 +119,7 @@ npm-use-backdrop-%:
 last-release:
 	@git tag --list --sort=committerdate | grep -e '^v.*' | tail -n 1
 
-RELEASE_VERSION = v0.9.1
+RELEASE_VERSION = v0.9.2
 RELEASE_PREP_DIR = ~/Downloads/Portal\ DNA\ Release\ Assets
 prepare-release:		$(PORTAL_DNA)
 	mkdir -p $(RELEASE_PREP_DIR)
