@@ -120,7 +120,7 @@ npm-use-backdrop-%:
 last-release:
 	@git tag --list --sort=committerdate | grep -e '^v.*' | tail -n 1
 
-RELEASE_VERSION = v0.9.1
+RELEASE_VERSION = v0.9.3
 RELEASE_PREP_DIR = ~/Downloads/Portal\ DNA\ Release\ Assets
 prepare-release:		$(PORTAL_DNA)
 	mkdir -p $(RELEASE_PREP_DIR)

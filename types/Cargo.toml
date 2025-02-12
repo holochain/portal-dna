@@ -15,4 +15,4 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 rmpv = { version = "1", features = ["with-serde"] }
 serde = "1"
-whi_hdi_extensions = "0.13"
+whi_hdi_extensions = "0.14"

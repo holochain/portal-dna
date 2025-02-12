@@ -9,4 +9,4 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 serde = "1"
-whi_hdi_extensions = "0.13"
+whi_hdi_extensions = "0.14"
