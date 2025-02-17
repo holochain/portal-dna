@@ -69,30 +69,37 @@ $(TARGET_DIR)/%_csr.wasm:	$(CSR_SOURCE_FILES)
 PRE_EDITION = edition = "2018"
 NEW_EDITION = edition = "2021"
 
-PRE_HDIE_VERSION = whi_hdi_extensions = "0.12"
-NEW_HDIE_VERSION = whi_hdi_extensions = "0.13"
+PRE_HDIE_VERSION = whi_hdi_extensions = "0.13"
+NEW_HDIE_VERSION = whi_hdi_extensions = "0.14"
 
-PRE_HDKE_VERSION = whi_hdk_extensions = "0.12"
-NEW_HDKE_VERSION = whi_hdk_extensions = "0.13"
+PRE_HDKE_VERSION = whi_hdk_extensions = "0.13"
+NEW_HDKE_VERSION = whi_hdk_extensions = "0.14"
 
-PRE_CRUD_VERSION = hc_crud_caps = "0.17"
-NEW_CRUD_VERSION = hc_crud_caps = "0.18"
+PRE_CRUD_VERSION = hc_crud_caps = "0.18"
+NEW_CRUD_VERSION = hc_crud_caps = "0.19"
 
 GG_REPLACE_LOCATIONS = ':(exclude)*.lock' zomes/*/ types sdk tests/zomes
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+    SED_INPLACE := sed -i ''
+else
+    SED_INPLACE := sed -i
+endif
 
 update-all-version:
 	rm -fr target;
 	make -s update-hdk-version
 	make -s update-hdi-version
 	make -s update-crud-version
+
 update-hdk-version:
-	git grep -l '$(PRE_HDKE_VERSION)' -- $(GG_REPLACE_LOCATIONS) | xargs sed -i 's/$(PRE_HDKE_VERSION)/$(NEW_HDKE_VERSION)/g'
+	git grep -l '$(PRE_HDKE_VERSION)' -- $(GG_REPLACE_LOCATIONS) | xargs $(SED_INPLACE) 's/$(PRE_HDKE_VERSION)/$(NEW_HDKE_VERSION)/g'
 update-hdi-version:
-	git grep -l '$(PRE_HDIE_VERSION)' -- $(GG_REPLACE_LOCATIONS) | xargs sed -i 's/$(PRE_HDIE_VERSION)/$(NEW_HDIE_VERSION)/g'
+	git grep -l '$(PRE_HDIE_VERSION)' -- $(GG_REPLACE_LOCATIONS) | xargs $(SED_INPLACE) 's/$(PRE_HDIE_VERSION)/$(NEW_HDIE_VERSION)/g'
 update-crud-version:
-	git grep -l '$(PRE_CRUD_VERSION)' -- $(GG_REPLACE_LOCATIONS) | xargs sed -i 's/$(PRE_CRUD_VERSION)/$(NEW_CRUD_VERSION)/g'
+	git grep -l '$(PRE_CRUD_VERSION)' -- $(GG_REPLACE_LOCATIONS) | xargs $(SED_INPLACE) 's/$(PRE_CRUD_VERSION)/$(NEW_CRUD_VERSION)/g'
 update-edition:
-	git grep -l '$(PRE_EDITION)' -- $(GG_REPLACE_LOCATIONS) | xargs sed -i 's/$(PRE_EDITION)/$(NEW_EDITION)/g'
+	git grep -l '$(PRE_EDITION)' -- $(GG_REPLACE_LOCATIONS) | xargs $(SED_INPLACE) 's/$(PRE_EDITION)/$(NEW_EDITION)/g'
 
 npm-reinstall-local:
 	cd tests; npm uninstall $(NPM_PACKAGE); npm i --save $(LOCAL_PATH)
@@ -112,7 +119,7 @@ npm-use-backdrop-%:
 last-release:
 	@git tag --list --sort=committerdate | grep -e '^v.*' | tail -n 1
 
-RELEASE_VERSION = v0.9.1
+RELEASE_VERSION = v0.9.2
 RELEASE_PREP_DIR = ~/Downloads/Portal\ DNA\ Release\ Assets
 prepare-release:		$(PORTAL_DNA)
 	mkdir -p $(RELEASE_PREP_DIR)
