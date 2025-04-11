@@ -1,6 +1,6 @@
 [package]
 name = "hc_portal_types"
-version = "0.17.0"
+version = "0.17.1"
 authors = ["Matthew Brisebois <matthew.brisebois@holo.host>"]
 edition = "2021"
 license = "CAL-1.0"
